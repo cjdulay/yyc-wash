@@ -56,9 +56,17 @@
     .btn-log { background: #334155; color: #f1f5f9; width: auto; min-width: 140px; margin: 15px auto 0; padding: 10px 20px; font-size: 0.8em; display: block; }
     
     .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+    
+    #ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; } .ios-icon { width: 20px; vertical-align: middle; }
+     
   </style>
 </head>
 <body>
+
+<div id="ios-prompt">
+  <p><strong>Install YYC Wash:</strong> Tap the <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/IOS7_Export_Icon.png" class="ios-icon"> button below and select <strong>"Add to Home Screen"</strong>.</p>
+  <button onclick="document.getElementById('ios-prompt').style.display='none'" style="border:none; background:none; color:#007aff; font-weight:bold; float:right;">Close</button>
+</div>
 
 <div id="card">
   <div id="final-verdict" class="final-verdict-ribbon">VERDICT: --</div>
@@ -284,6 +292,20 @@ updateWeather();
       .then(() => console.log("Manager (Service Worker) Registered"))
       .catch((err) => console.log("Manager Failed:", err));
   }
+  // Detect if device is iOS and not yet installed
+const isIos = () => {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return /iphone|ipad|ipod/.test(userAgent);
+}
+
+// Check if app is already running in standalone (app) mode
+const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+// Show prompt if on iOS and not in standalone mode
+if (isIos() && !isInStandaloneMode()) {
+  document.getElementById('ios-prompt').style.display = 'block';
+}
+
 </script>
 </body>
 </html>

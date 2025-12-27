@@ -333,6 +333,15 @@ document.getElementById('weather-link').addEventListener('click', (e) => {
   }
 });
 
+  let refreshing = false;
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (!refreshing) {
+    window.location.reload();
+    refreshing = true;
+  }
+});
+  
+
 
 </script>
 </body>

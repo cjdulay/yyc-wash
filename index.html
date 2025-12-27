@@ -314,21 +314,22 @@ document.getElementById('weather-link').addEventListener('click', (e) => {
   e.preventDefault();
   const ua = navigator.userAgent.toLowerCase();
   
-  // Calgary coordinates for precise local loading
+  // Calgary coordinates for the fallback link
   const lat = 51.0447;
   const lon = -114.0719;
   const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
 
   if (ua.includes("iphone") || ua.includes("ipad")) {
-    // iOS: Open native Apple Weather via Universal Link
+    // KEEPING iOS WORKING: This Universal Link opens Apple Weather
     window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
   } 
   else if (ua.includes("android")) {
-    // Android: Direct Intent to Google Weather Card
-    window.location.href = "intent://com.google.android.googlequicksearchbox.Weather/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
+    // FIXING ANDROID: This targets the internal Google Weather Activity
+    const googleWeatherIntent = "intent:#Intent;action=android.intent.action.VIEW;component=com.google.android.googlequicksearchbox/com.google.android.apps.search.weather.WeatherExportedActivity;S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
+    window.location.href = googleWeatherIntent;
   } 
   else {
-    // Desktop: Fallback to high-quality weather site
+    // Desktop Fallback
     window.open(fallback, "_blank");
   }
 });
@@ -340,9 +341,6 @@ navigator.serviceWorker.addEventListener('controllerchange', () => {
     refreshing = true;
   }
 });
-  
-
-
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-## yyc-wash
+## [yyc-wash](https://cjdulay.github.io/yyc-wash/) <-- link here
 
 # 🚗 YYC Car Wash Forecaster (V74)
 

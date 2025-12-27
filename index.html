@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>YYC CAR WASH FORECASTER</title>
   <style>
     body { font-family: sans-serif; background: #333; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.5s; }
@@ -23,7 +26,7 @@
     <div id="salt-pill" class="salt-pill">SALT INTENSITY: --</div>
     <div id="status-badge" class="badge">--</div>
   </div>
-  <div id="slush-box">🚜 ACTIVE SLUSH: Snow is falling. Roads are liquid brine.</div>
+  <div id="slush-box">🚜 ACTIVE SLUSH: Fresh snow detected. Brine active.</div>
   <div id="reason-box" class="box">--</div>
   <button class="btn" onclick="location.reload()">REFRESH DATA</button>
   <div id="footer-text" class="footer">--</div>
@@ -34,22 +37,14 @@ async function updateWeather() {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    
-    // TIMESTAMP FIX: Force local Calgary hour
     const now = new Date();
-    const curHr = now.getHours();
-    
-    // Find index for current hour (Open-Meteo returns 48h starting from midnight yesterday)
-    const hrIndex = 24 + curHr; 
+    const hrIndex = 24 + now.getHours(); 
     const curTemp = data.hourly.temperature_2m[hrIndex];
 
-    // SLUSH LOGIC FIX: Environment Canada reports light snow all day
-    let snowFound = 0;
-    for (let k = hrIndex - 6; k <= hrIndex; k++) { 
-      if (data.hourly.precipitation[k] > 0) snowFound += data.hourly.precipitation[k]; 
-    }
-    // Trigger if snowing or snowed in last 6h
-    const isSlushy = (snowFound > 0.1 || data.hourly.precipitation[hrIndex] > 0) && curTemp > -18;
+    // UPDATED SLUSH LOGIC
+    let snow = 0;
+    for (let k = hrIndex - 6; k <= hrIndex; k++) { if (data.hourly.precipitation[k] > 0) snow += data.hourly.precipitation[k]; }
+    const slush = snow >= 0.1 && curTemp > -18;
 
     // SALT INTENSITY
     let sI = "Low", sC = "#adb5bd";
@@ -59,31 +54,105 @@ async function updateWeather() {
     document.getElementById('salt-pill').style.color = sC;
 
     // MAIN STATUS
-    const tHigh = data.daily.temperature_2m_max[1]; // Today's high
-    let status = "🟢 WASH NOW", color = "#12b886", icon = "🚿", reason = "Roads are drying.";
+    const tHigh = data.daily.temperature_2m_max[1];
+    let status = "🟢 WASH NOW", color = "#12b886", icon = "🚿", reason = "Roads are messy."; // Default to messy for winter
     
     if (tHigh < -10) { 
       status = "🔵 TOO COLD"; color = "#228be6"; icon = "🧊"; 
-      reason = `High of ${tHigh}°C. Door locks will freeze instantly.`; 
+      reason = `High of ${tHigh}°C. Door locks will freeze.`; 
     }
 
-    // Force Slush Note if needed
-    if (isSlushy) { document.getElementById('slush-box').style.display = 'block'; }
+    if (slush) document.getElementById('slush-box').style.display = 'block';
     
     document.body.style.backgroundColor = color;
     document.getElementById('status-badge').innerHTML = `${icon} ${status}`;
     document.getElementById('status-badge').style.color = color;
     document.getElementById('reason-box').innerText = reason;
-    
-    // FOOTER TIMESTAMP
-    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    document.getElementById('footer-text').innerText = `UPDATED: ${timeStr} • CALGARY, AB`;
+    document.getElementById('footer-text').innerText = `UPDATED: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • CALGARY`;
     
     document.getElementById('loading').style.display = 'none';
     document.getElementById('card').style.display = 'block';
-  } catch (e) { 
-    document.getElementById('loading').innerText = "Weather Scan Error. Please refresh."; 
-  }
+  } catch (e) { document.getElementById('loading').innerText = "Network Error."; }
+}
+updateWeather();
+</script>
+</body>
+</h
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>YYC CAR WASH FORECASTER</title>
+  <style>
+    body { font-family: sans-serif; background: #333; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.5s; }
+    #card { background: white; width: 94%; max-width: 380px; border-radius: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; overflow: hidden; display: none; }
+    .header { padding: 25px 15px 10px; }
+    .badge { font-size: 2.1em; font-weight: 900; margin: 5px 0; }
+    .salt-pill { font-size: 0.65em; font-weight: bold; background: #eee; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; border: 1px solid #ddd; text-transform: uppercase; }
+    #slush-box { background: #fff5f5; color: #c92a2a; border: 1px solid #ffc9c9; border-radius: 12px; padding: 12px; margin: 0 20px 12px; font-size: 0.9em; font-weight: bold; text-align: left; display: none; }
+    .box { background: #f8f9fa; border-radius: 20px; padding: 15px; margin: 0 20px 12px; font-size: 1.05em; line-height: 1.4; font-weight: 500; }
+    .btn { background: #212529; color: white; border: none; padding: 16px; border-radius: 50px; font-size: 1.1em; font-weight: bold; width: 85%; margin-bottom: 20px; cursor: pointer; }
+    .footer { font-size: 0.65em; color: #999; padding-bottom: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+<div id="loading" style="color:white; font-weight:bold;">Calgary Weather Scan...</div>
+<div id="card">
+  <div class="header">
+    <div id="salt-pill" class="salt-pill">SALT INTENSITY: --</div>
+    <div id="status-badge" class="badge">--</div>
+  </div>
+  <div id="slush-box">🚜 ACTIVE SLUSH: Fresh snow detected. Brine active.</div>
+  <div id="reason-box" class="box">--</div>
+  <button class="btn" onclick="location.reload()">REFRESH DATA</button>
+  <div id="footer-text" class="footer">--</div>
+</div>
+<script>
+async function updateWeather() {
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max&hourly=precipitation,temperature_2m&timezone=America/Edmonton&past_days=1";
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const now = new Date();
+    const hrIndex = 24 + now.getHours(); 
+    const curTemp = data.hourly.temperature_2m[hrIndex];
+
+    // UPDATED SLUSH LOGIC
+    let snow = 0;
+    for (let k = hrIndex - 6; k <= hrIndex; k++) { if (data.hourly.precipitation[k] > 0) snow += data.hourly.precipitation[k]; }
+    const slush = snow >= 0.1 && curTemp > -18;
+
+    // SALT INTENSITY
+    let sI = "Low", sC = "#adb5bd";
+    if (curTemp <= 0 && curTemp > -10) { sI = "High (Brine)"; sC = "#fab005"; }
+    else if (curTemp <= -10 && curTemp >= -16) { sI = "EXTREME (Calcium)"; sC = "#fa5252"; }
+    document.getElementById('salt-pill').innerText = "SALT: " + sI;
+    document.getElementById('salt-pill').style.color = sC;
+
+    // MAIN STATUS
+    const tHigh = data.daily.temperature_2m_max[1];
+    let status = "🟢 WASH NOW", color = "#12b886", icon = "🚿", reason = "Roads are messy."; // Default to messy for winter
+    
+    if (tHigh < -10) { 
+      status = "🔵 TOO COLD"; color = "#228be6"; icon = "🧊"; 
+      reason = `High of ${tHigh}°C. Door locks will freeze.`; 
+    }
+
+    if (slush) document.getElementById('slush-box').style.display = 'block';
+    
+    document.body.style.backgroundColor = color;
+    document.getElementById('status-badge').innerHTML = `${icon} ${status}`;
+    document.getElementById('status-badge').style.color = color;
+    document.getElementById('reason-box').innerText = reason;
+    document.getElementById('footer-text').innerText = `UPDATED: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • CALGARY`;
+    
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('card').style.display = 'block';
+  } catch (e) { document.getElementById('loading').innerText = "Network Error."; }
 }
 updateWeather();
 </script>

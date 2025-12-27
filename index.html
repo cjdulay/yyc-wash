@@ -58,6 +58,8 @@
     .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
     
     #ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; } .ios-icon { width: 20px; vertical-align: middle; }
+    #weather-link:active { transform: scale(0.97); opacity: 0.8; transition: transform 0.1s; } #weather-link { -webkit-tap-highlight-color: transparent; touch-action: manipulation; position: relative; }
+    
      
   </style>
 </head>
@@ -134,7 +136,13 @@
     </div>
   </div>
 
-  <div id="forecast"></div>
+  <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; position: relative;">
+  <span style="position: absolute; top: 0; right: 0; font-size: 0.8em; opacity: 0.6; padding: 5px;">ⓘ</span>
+  
+  <div id="forecast" style="display:flex;gap:10px;margin-top:15px;overflow-x:auto;padding-bottom:5px;">
+    </div>
+</a>
+
 
   <div class="fact-box">
     <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase; margin-bottom:6px; letter-spacing:1px;">YYC Insider Insight</div>
@@ -285,9 +293,8 @@ async function updateWeather() {
   } catch (e) { console.error(e); }
 }
 updateWeather();
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
+
+if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
       .then(() => console.log("Manager (Service Worker) Registered"))
       .catch((err) => console.log("Manager Failed:", err));
@@ -305,6 +312,27 @@ const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.n
 if (isIos() && !isInStandaloneMode()) {
   document.getElementById('ios-prompt').style.display = 'block';
 }
+
+document.getElementById('weather-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  const ua = navigator.userAgent.toLowerCase();
+  
+  // Use a reliable fallback URL
+  const fallbackUrl = "https://weather.com/weather/today/l/51.05,-114.07";
+
+  if (ua.includes("iphone") || ua.includes("ipad")) {
+    // iOS: Native Apple Weather
+    window.location.href = "weather://";
+    setTimeout(() => { window.location.href = fallbackUrl; }, 500);
+  } else if (ua.includes("android")) {
+    // Android: Google Weather Intent
+    const intentUrl = "intent://com.google.android.googlequicksearchbox.Weather/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;S.browser_fallback_url=" + encodeURIComponent(fallbackUrl) + ";end";
+    window.location.href = intentUrl;
+  } else {
+    // Desktop/Other
+    window.open(fallbackUrl, "_blank");
+  }
+});
 
 </script>
 </body>

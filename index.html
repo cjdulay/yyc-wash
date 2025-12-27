@@ -1,158 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8"> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YYC CAR WASH FORECASTER</title>
   <style>
-    body { font-family: sans-serif; background: #333; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.5s; }
-    #card { background: white; width: 94%; max-width: 380px; border-radius: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; overflow: hidden; display: none; }
-    .header { padding: 25px 15px 10px; }
-    .badge { font-size: 2.1em; font-weight: 900; margin: 5px 0; }
-    .salt-pill { font-size: 0.65em; font-weight: bold; background: #eee; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; border: 1px solid #ddd; text-transform: uppercase; }
-    #slush-box { background: #fff5f5; color: #c92a2a; border: 1px solid #ffc9c9; border-radius: 12px; padding: 12px; margin: 0 20px 12px; font-size: 0.9em; font-weight: bold; text-align: left; display: none; }
-    .box { background: #f8f9fa; border-radius: 20px; padding: 15px; margin: 0 20px 12px; font-size: 1.05em; line-height: 1.4; font-weight: 500; }
-    .btn { background: #212529; color: white; border: none; padding: 16px; border-radius: 50px; font-size: 1.1em; font-weight: bold; width: 85%; margin-bottom: 20px; cursor: pointer; }
-    .footer { font-size: 0.65em; color: #999; padding-bottom: 15px; font-weight: bold; }
+    :root { --bg: #0f172a; --card: #ffffff; --accent: #1e293b; --blue: #0284c7; --red: #e11d48; --gold: #fbbf24; --green: #059669; }
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.6s ease; }
+    #card { background: var(--card); width: 92%; max-width: 400px; border-radius: 40px; overflow: hidden; display: none; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    
+    .header { padding: 35px 20px 10px; text-align: center; }
+    #verdict-ribbon { display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.75em; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; color: white; }
+    .badge { font-size: 2.8em; font-weight: 900; margin: 5px 0; letter-spacing: -1.5px; }
+    
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 15px; }
+    .tile { background: #f1f5f9; padding: 15px; border-radius: 26px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.1s; }
+    .tile:active { transform: scale(0.97); }
+    .stat-label { font-size: 0.65em; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; }
+    .stat-val { font-size: 0.9em; font-weight: 700; color: #0f172a; }
+    .chevron { font-size: 0.7em; margin-left: 4px; vertical-align: middle; color: #94a3b8; }
+    .tile-wide { grid-column: span 2; background: #fffbeb; border-color: #fde68a; }
+
+    /* Drawers */
+    .drawer { display: none; background: #0f172a; color: #f1f5f9; margin: 0 20px 15px; padding: 22px; border-radius: 26px; font-size: 0.85em; line-height: 1.6; border: 1px solid #334155; }
+    .drawer b { color: var(--gold); }
+
+    /* Expandable Alerts */
+    .alerts-area { padding: 0 20px 15px; }
+    .banner { border-radius: 22px; padding: 14px 18px; margin-bottom: 10px; display: none; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; position: relative; }
+    .banner-content { flex-grow: 1; }
+    .b-title { font-weight: 800; display: block; font-size: 0.95em; }
+    .b-sub { font-size: 0.75em; font-weight: 600; text-transform: uppercase; opacity: 0.8; }
+    .alert-detail { display: none; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 10px; font-size: 0.8em; line-height: 1.4; font-weight: 500; }
+
+    .blue { background: #e0f2fe; color: #0369a1; }
+    .red { background: #fff1f2; color: #be123c; }
+    .orange { background: #fef3c7; color: #b45309; }
+
+    #forecast { display: flex; margin: 0 20px 15px; background: #f8fafc; padding: 12px; border-radius: 28px; }
+    .reason-box { margin: 0 20px 15px; font-size: 0.95em; font-weight: 600; text-align: center; color: #475569; }
+
+    .action-container { padding: 0 20px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn { border: none; font-weight: 800; font-size: 0.95em; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 24px; padding: 18px; }
+    .btn-refresh { background: #1e293b; color: white; }
+    .btn-log { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+
+    .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 20px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
-<div id="loading" style="color:white; font-weight:bold;">Calgary Weather Scan...</div>
+
+<div id="loading" style="color:white; font-weight:bold;">Expanding Hazard Logic...</div>
+
 <div id="card">
   <div class="header">
-    <div id="salt-pill" class="salt-pill">SALT INTENSITY: --</div>
+    <div id="verdict-ribbon">WAIT</div>
     <div id="status-badge" class="badge">--</div>
   </div>
-  <div id="slush-box">🚜 ACTIVE SLUSH: Fresh snow detected. Brine active.</div>
-  <div id="reason-box" class="box">--</div>
-  <button class="btn" onclick="location.reload()">REFRESH DATA</button>
+
+  <div class="dashboard-grid">
+    <div class="tile" onclick="toggleDrawer('salt-drawer')">
+      <span class="stat-label">ROAD SALT</span>
+      <span id="salt-val" class="stat-val">--</span> <span class="chevron">▼</span>
+    </div>
+    <div class="tile" onclick="toggleDrawer('log-drawer')">
+      <span class="stat-label">WASH LOGS</span>
+      <span id="last-date" class="stat-val">None</span> <span class="chevron">▼</span>
+    </div>
+    <div class="tile tile-wide" onclick="toggleDrawer('verdict-drawer')">
+      <span class="stat-label">SAFE WASH OPENING</span>
+      <span id="next-val" class="stat-val">--</span> <span class="chevron">▼</span>
+    </div>
+  </div>
+
+  <div id="salt-drawer" class="drawer">
+    <b style="color: #ffd43b;">🧪 Salt Guide:</b><br>
+    • <b>Low:</b> Sand/Pickle. High chip risk.<br>
+    • <b>High:</b> Sodium Chloride. Traditional spray.<br>
+    • <b>Extreme:</b> Calcium Chloride. Oily brine used in deep freeze.
+  </div>
+
+  <div id="log-drawer" class="drawer">
+    <b style="color: #ffd43b;">🚗 Wash History:</b><br>
+    <div id="log-list" style="margin-top:5px;">No entries logged.</div>
+  </div>
+
+  <div id="verdict-drawer" class="drawer">
+    <b style="color: #ffd43b;">📋 The Verdict:</b><br>
+    <span id="verdict-text">Analyzing forecast...</span>
+  </div>
+
+  <div class="alerts-area">
+    <div id="freeze-alert" class="banner blue" onclick="toggleAlertDetail('freeze-detail')">
+      <span>⏱️</span>
+      <div class="banner-content">
+        <span class="b-title" id="freeze-val">-- MIN WINDOW</span>
+        <span class="b-sub">Seal Drying Required <span class="chevron">▼</span></span>
+        <div id="freeze-detail" class="alert-detail">
+          <b>Pro-Tip:</b> Use a microfibre cloth to dry the rubber door gaskets <b>and</b> the inner door frame. If moisture remains, the door will bond shut in minutes.
+        </div>
+      </div>
+    </div>
+
+    <div id="chip-alert" class="banner orange" onclick="toggleAlertDetail('chip-detail')">
+      <span>💎</span>
+      <div class="banner-content">
+        <span class="b-title">HIGH CHIP RISK</span>
+        <span class="b-sub">Pickle mix in use <span class="chevron">▼</span></span>
+        <div id="chip-detail" class="alert-detail">
+          <b>Pro-Tip:</b> The City is using gravel (Pickle). Increase your following distance to 3+ seconds on Deerfoot to avoid flying stones.
+        </div>
+      </div>
+    </div>
+
+    <div id="slush-alert" class="banner red" onclick="toggleAlertDetail('slush-detail')">
+      <span>🚜</span>
+      <div class="banner-content">
+        <span class="b-title">ACTIVE SLUSH</span>
+        <span class="b-sub">Chemical splatter <span class="chevron">▼</span></span>
+        <div id="slush-detail" class="alert-detail">
+          <b>Pro-Tip:</b> Road spray is currently acidic. If you can't wash, spray your wheel wells with a hose at home to prevent rust "hotspots."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="reason-box" class="reason-box">--</div>
+  <div id="forecast"></div>
+
+  <div class="action-container">
+    <button class="btn btn-refresh" onclick="location.reload()">🔄 REFRESH</button>
+    <button class="btn btn-log" onclick="logWash()">🚿 LOG WASH</button>
+  </div>
   <div id="footer-text" class="footer">--</div>
 </div>
+
 <script>
-async function updateWeather() {
-  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max&hourly=precipitation,temperature_2m&timezone=America/Edmonton&past_days=1";
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const now = new Date();
-    const hrIndex = 24 + now.getHours(); 
-    const curTemp = data.hourly.temperature_2m[hrIndex];
-
-    // UPDATED SLUSH LOGIC
-    let snow = 0;
-    for (let k = hrIndex - 6; k <= hrIndex; k++) { if (data.hourly.precipitation[k] > 0) snow += data.hourly.precipitation[k]; }
-    const slush = snow >= 0.1 && curTemp > -18;
-
-    // SALT INTENSITY
-    let sI = "Low", sC = "#adb5bd";
-    if (curTemp <= 0 && curTemp > -10) { sI = "High (Brine)"; sC = "#fab005"; }
-    else if (curTemp <= -10 && curTemp >= -16) { sI = "EXTREME (Calcium)"; sC = "#fa5252"; }
-    document.getElementById('salt-pill').innerText = "SALT: " + sI;
-    document.getElementById('salt-pill').style.color = sC;
-
-    // MAIN STATUS
-    const tHigh = data.daily.temperature_2m_max[1];
-    let status = "🟢 WASH NOW", color = "#12b886", icon = "🚿", reason = "Roads are messy."; // Default to messy for winter
-    
-    if (tHigh < -10) { 
-      status = "🔵 TOO COLD"; color = "#228be6"; icon = "🧊"; 
-      reason = `High of ${tHigh}°C. Door locks will freeze.`; 
-    }
-
-    if (slush) document.getElementById('slush-box').style.display = 'block';
-    
-    document.body.style.backgroundColor = color;
-    document.getElementById('status-badge').innerHTML = `${icon} ${status}`;
-    document.getElementById('status-badge').style.color = color;
-    document.getElementById('reason-box').innerText = reason;
-    document.getElementById('footer-text').innerText = `UPDATED: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • CALGARY`;
-    
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('card').style.display = 'block';
-  } catch (e) { document.getElementById('loading').innerText = "Network Error."; }
+function toggleDrawer(id) {
+  const d = document.getElementById(id);
+  const isOpen = d.style.display === 'block';
+  document.querySelectorAll('.drawer').forEach(el => el.style.display = 'none');
+  if (!isOpen) d.style.display = 'block';
 }
-updateWeather();
-</script>
-</body>
-</h
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>YYC CAR WASH FORECASTER</title>
-  <style>
-    body { font-family: sans-serif; background: #333; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.5s; }
-    #card { background: white; width: 94%; max-width: 380px; border-radius: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; overflow: hidden; display: none; }
-    .header { padding: 25px 15px 10px; }
-    .badge { font-size: 2.1em; font-weight: 900; margin: 5px 0; }
-    .salt-pill { font-size: 0.65em; font-weight: bold; background: #eee; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; border: 1px solid #ddd; text-transform: uppercase; }
-    #slush-box { background: #fff5f5; color: #c92a2a; border: 1px solid #ffc9c9; border-radius: 12px; padding: 12px; margin: 0 20px 12px; font-size: 0.9em; font-weight: bold; text-align: left; display: none; }
-    .box { background: #f8f9fa; border-radius: 20px; padding: 15px; margin: 0 20px 12px; font-size: 1.05em; line-height: 1.4; font-weight: 500; }
-    .btn { background: #212529; color: white; border: none; padding: 16px; border-radius: 50px; font-size: 1.1em; font-weight: bold; width: 85%; margin-bottom: 20px; cursor: pointer; }
-    .footer { font-size: 0.65em; color: #999; padding-bottom: 15px; font-weight: bold; }
-  </style>
-</head>
-<body>
-<div id="loading" style="color:white; font-weight:bold;">Calgary Weather Scan...</div>
-<div id="card">
-  <div class="header">
-    <div id="salt-pill" class="salt-pill">SALT INTENSITY: --</div>
-    <div id="status-badge" class="badge">--</div>
-  </div>
-  <div id="slush-box">🚜 ACTIVE SLUSH: Fresh snow detected. Brine active.</div>
-  <div id="reason-box" class="box">--</div>
-  <button class="btn" onclick="location.reload()">REFRESH DATA</button>
-  <div id="footer-text" class="footer">--</div>
-</div>
-<script>
+
+function toggleAlertDetail(id) {
+  const d = document.getElementById(id);
+  d.style.display = d.style.display === 'block' ? 'none' : 'block';
+}
+
+function logWash() {
+  let history = JSON.parse(localStorage.getItem('washLogV2') || "[]");
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-CA', {month:'short', day:'numeric'});
+  history.unshift(dateStr + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+  if (history.length > 3) history.pop();
+  localStorage.setItem('washLogV2', JSON.stringify(history));
+  updateUI();
+}
+
+function undoWash() {
+  let history = JSON.parse(localStorage.getItem('washLogV2') || "[]");
+  history.shift();
+  localStorage.setItem('washLogV2', JSON.stringify(history));
+  updateUI();
+}
+
+function updateUI() {
+  const history = JSON.parse(localStorage.getItem('washLogV2') || "[]");
+  const list = document.getElementById('log-list');
+  const lastDateSpan = document.getElementById('last-date');
+  if (history.length > 0) {
+    lastDateSpan.innerText = history[0].split(' ')[0] + " " + history[0].split(' ')[1];
+    list.innerHTML = history.map((item, idx) => `
+      <div style="padding:6px 0; border-bottom:1px solid #334155; display:flex; justify-content:space-between;">
+        <span>📅 ${item}</span>
+        ${idx === 0 ? '<span style="color:#f43f5e; font-weight:bold; cursor:pointer;" onclick="undoWash()">Undo</span>' : ''}
+      </div>`).join('');
+  } else {
+    lastDateSpan.innerText = "None";
+    list.innerHTML = "No entries logged.";
+  }
+}
+
 async function updateWeather() {
-  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max&hourly=precipitation,temperature_2m&timezone=America/Edmonton&past_days=1";
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max,precipitation_sum&hourly=precipitation,temperature_2m,wind_speed_10m&timezone=America/Edmonton&past_days=1";
   try {
     const res = await fetch(url);
     const data = await res.json();
     const now = new Date();
-    const hrIndex = 24 + now.getHours(); 
-    const curTemp = data.hourly.temperature_2m[hrIndex];
+    const curHr = 24 + now.getHours();
+    const curTemp = data.hourly.temperature_2m[curHr];
+    const wind = data.hourly.wind_speed_10m[curHr];
 
-    // UPDATED SLUSH LOGIC
-    let snow = 0;
-    for (let k = hrIndex - 6; k <= hrIndex; k++) { if (data.hourly.precipitation[k] > 0) snow += data.hourly.precipitation[k]; }
-    const slush = snow >= 0.1 && curTemp > -18;
-
-    // SALT INTENSITY
-    let sI = "Low", sC = "#adb5bd";
-    if (curTemp <= 0 && curTemp > -10) { sI = "High (Brine)"; sC = "#fab005"; }
-    else if (curTemp <= -10 && curTemp >= -16) { sI = "EXTREME (Calcium)"; sC = "#fa5252"; }
-    document.getElementById('salt-pill').innerText = "SALT: " + sI;
-    document.getElementById('salt-pill').style.color = sC;
-
-    // MAIN STATUS
-    const tHigh = data.daily.temperature_2m_max[1];
-    let status = "🟢 WASH NOW", color = "#12b886", icon = "🚿", reason = "Roads are messy."; // Default to messy for winter
+    const tToday = data.daily.temperature_2m_max[1];
+    let vText = "WAIT", vCol = "var(--accent)", status = "🔵 TOO COLD", icon = "🧊";
     
-    if (tHigh < -10) { 
-      status = "🔵 TOO COLD"; color = "#228be6"; icon = "🧊"; 
-      reason = `High of ${tHigh}°C. Door locks will freeze.`; 
+    if (curTemp < -12 || tToday < -10) {
+        vText = "NO GO"; vCol = "var(--blue)"; status = "🔵 TOO COLD";
+    } else if (curTemp > -5) {
+        vText = "WASH NOW"; vCol = "var(--green)"; status = "🟢 WASH NOW"; icon = "🚿";
     }
 
-    if (slush) document.getElementById('slush-box').style.display = 'block';
-    
-    document.body.style.backgroundColor = color;
+    document.getElementById('verdict-ribbon').innerText = vText;
+    document.getElementById('verdict-ribbon').style.background = vCol;
+    document.body.style.backgroundColor = vCol;
     document.getElementById('status-badge').innerHTML = `${icon} ${status}`;
-    document.getElementById('status-badge').style.color = color;
-    document.getElementById('reason-box').innerText = reason;
-    document.getElementById('footer-text').innerText = `UPDATED: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • CALGARY`;
-    
+    document.getElementById('status-badge').style.color = vCol;
+    document.getElementById('reason-box').innerText = curTemp < -12 ? `Too cold (${curTemp}°C). Locks will freeze.` : "Roads are messy with active salt splash.";
+
+    let sI = "Low", sC = "#64748b";
+    if (curTemp <= 0 && curTemp > -10) { sI = "High (Brine)"; sC = "#d97706"; }
+    else if (curTemp <= -10) { sI = "Extreme (Calcium)"; sCol = "#e11d48"; }
+    document.getElementById('salt-val').innerText = sI;
+    document.getElementById('salt-val').style.color = sC;
+
+    if (curTemp < 0) {
+      let win = Math.max(5, Math.round(35 + (curTemp * 1.8) - (wind * 0.25)));
+      document.getElementById('freeze-val').innerText = `${win} MIN WINDOW`;
+      document.getElementById('freeze-alert').style.display = 'flex';
+    }
+    let snowFound = 0;
+    for (let k = curHr - 6; k <= curHr; k++) { snowFound += data.hourly.precipitation[k]; }
+    if (snowFound >= 0.1 && curTemp > -18) document.getElementById('slush-alert').style.display = 'flex';
+    if (curTemp < -14) document.getElementById('chip-alert').style.display = 'flex';
+
+    let fH = "";
+    for (let j = 1; j < 6; j++) {
+      const day = (j === 1) ? "Today" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[j]+"T00:00:00").getDay()];
+      fH += `<div style="flex:1;text-align:center;"><div style="font-size:0.65em;font-weight:900;color:#94a3b8;">${day}</div><div style="font-size:1.1em;margin:5px 0;">${data.daily.precipitation_sum[j] > 0.1 ? '❄️' : '☀️'}</div><div style="font-size:0.85em;font-weight:900;">${Math.round(data.daily.temperature_2m_max[j])}°</div></div>`;
+    }
+    document.getElementById('forecast').innerHTML = fH;
+
+    for (let k = 2; k < 9; k++) {
+      if (data.daily.temperature_2m_max[k] > -6 && data.daily.precipitation_sum[k] < 0.1) {
+        const dName = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[k]+"T00:00:00").getDay()];
+        document.getElementById('next-val').innerText = dName;
+        document.getElementById('verdict-text').innerHTML = `<b>${dName}</b> is safe: High of <b>${Math.round(data.daily.temperature_2m_max[k])}°C</b> and dry roads.`;
+        break;
+      }
+    }
+
+    document.getElementById('footer-text').innerText = `YYC SENSOR • ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
     document.getElementById('loading').style.display = 'none';
     document.getElementById('card').style.display = 'block';
-  } catch (e) { document.getElementById('loading').innerText = "Network Error."; }
+    updateUI();
+  } catch (e) { document.getElementById('loading').innerText = "Sync Error."; }
 }
 updateWeather();
 </script>

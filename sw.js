@@ -1,26 +1,29 @@
-const CACHE_NAME = 'yyc-wash-v2';
-const ASSETS = [
-  './',
-  './index.html',
-  './logo.png',
-  './manifest.json'
-];
+const CACHE_NAME = 'yyc-wash-v2'; // Increment this every time you push
+const ASSETS = ['./', './index.html', './manifest.json'];
 
-// Install the manager and cache files
 self.addEventListener('install', (event) => {
+  // FORCE THE UPDATE: Skip the waiting phase
+  self.skipWaiting(); 
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
 
-// Serve files from cache if offline
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+self.addEventListener('activate', (event) => {
+  // CLEAN UP: Delete old versions of the app from the phone
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(keys.map((key) => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      }));
     })
   );
-}
-);
+  // TAKE CONTROL: Start serving the new files immediately
+  return self.clients.claim(); 
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => response || fetch(event.request))
+  );
+});

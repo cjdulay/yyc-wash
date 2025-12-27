@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yyc-wash-v1';
+const CACHE_NAME = 'yyc-wash-v2';
 const ASSETS = [
   './',
   './index.html',

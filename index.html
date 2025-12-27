@@ -136,13 +136,10 @@
     </div>
   </div>
 
-  <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; position: relative;">
-  <span style="position: absolute; top: 0; right: 0; font-size: 0.8em; opacity: 0.6; padding: 5px;">ⓘ</span>
-  
+ <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
   <div id="forecast" style="display:flex;gap:10px;margin-top:15px;overflow-x:auto;padding-bottom:5px;">
     </div>
 </a>
-
 
   <div class="fact-box">
     <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase; margin-bottom:6px; letter-spacing:1px;">YYC Insider Insight</div>
@@ -317,22 +314,25 @@ document.getElementById('weather-link').addEventListener('click', (e) => {
   e.preventDefault();
   const ua = navigator.userAgent.toLowerCase();
   
-  // Use a reliable fallback URL
-  const fallbackUrl = "https://weather.com/weather/today/l/51.05,-114.07";
+  // Calgary coordinates for precise local loading
+  const lat = 51.0447;
+  const lon = -114.0719;
+  const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
 
   if (ua.includes("iphone") || ua.includes("ipad")) {
-    // iOS: Native Apple Weather
-    window.location.href = "weather://";
-    setTimeout(() => { window.location.href = fallbackUrl; }, 500);
-  } else if (ua.includes("android")) {
-    // Android: Google Weather Intent
-    const intentUrl = "intent://com.google.android.googlequicksearchbox.Weather/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;S.browser_fallback_url=" + encodeURIComponent(fallbackUrl) + ";end";
-    window.location.href = intentUrl;
-  } else {
-    // Desktop/Other
-    window.open(fallbackUrl, "_blank");
+    // iOS: Open native Apple Weather via Universal Link
+    window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
+  } 
+  else if (ua.includes("android")) {
+    // Android: Direct Intent to Google Weather Card
+    window.location.href = "intent://com.google.android.googlequicksearchbox.Weather/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
+  } 
+  else {
+    // Desktop: Fallback to high-quality weather site
+    window.open(fallback, "_blank");
   }
 });
+
 
 </script>
 </body>

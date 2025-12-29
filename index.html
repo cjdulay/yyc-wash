@@ -347,55 +347,60 @@ function updateUI() {
 async function updateWeather(isFullRefresh = true) {
   if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC SENSOR • SYNCING...";
   
-  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max,precipitation_sum&hourly=precipitation,temperature_2m,wind_speed_10m&timezone=America/Edmonton&past_days=1";
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max,precipitation_sum&hourly=precipitation,temperature_2m,wind_speed_10m&timezone=America/Edmonton&past_days=5";
   
   try {
     const res = await fetch(url);
     const data = await res.json();
+    const now = new Date();
     
-    // 1. DATA EXTRACTION
-    const curHr = 24 + new Date().getHours();
-    // const curTemp = data.hourly.temperature_2m[curHr];
-     const wind = data.hourly.wind_speed_10m[curHr];
-    // const tToday = data.daily.temperature_2m_max[1];
-    // const tYesterday = data.daily.temperature_2m_max[0];
-    // const precToday = data.daily.precipitation_sum[1] || 0;
-    // const precYesterday = data.daily.precipitation_sum[0] || 0;
-    
-    var curTemp = -2;
-    // var wind =  20;
-    var tToday = 0;
-    var tYesterday = -1;
-    var precToday = 0;
-    var precYesterday= 0;
+    // --- 1. DATA EXTRACTION (INDEXED FOR 5-DAY HISTORY) ---
+    const todayIdx = 5; 
+    const curHr = (todayIdx * 24) + now.getHours(); 
 
-    // 2. USER SETTINGS
+    // Extracting Live Data
+    let curTemp = data.hourly.temperature_2m[curHr];
+    let wind = data.hourly.wind_speed_10m[curHr];
+    let tToday = data.daily.temperature_2m_max[todayIdx];
+    let precToday = data.daily.precipitation_sum[todayIdx] || 0;
+
+    // --- 2. USER SETTINGS & 5-DAY MEMORY SCAN ---
     const isStrict = document.getElementById('risk-toggle')?.checked ?? true;
     const isHighVoltage = document.getElementById('ev-toggle')?.checked ?? false;
-    const sMin = isStrict ? -5 : -2;
-    const sMax = isStrict ? 3 : 2;
 
-    const roadIsWet = (tToday > 0 || tYesterday > 0);
-    const isSaltySlush = (curTemp >= sMin && curTemp <= sMax && (precToday > 0.1 || precYesterday > 0.1 || roadIsWet));
-    const isChinookThaw = (curTemp > -2 && tYesterday < -10);
-    const isRefreezing = (curTemp <= 1 && roadIsWet);
-    
-    // 3. DECISION TREE
-    let vText = "WAIT", vCol = "var(--accent)", status = "🔵 NEUTRAL";
-    let judgement = "Roads are clear, but washing is risky.";
-
-    if (curTemp < -12 || tToday < -10) {
-        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "❄️ TOO COLD";
-        judgement = curTemp <= -17 ? "<b>Salt is dead.</b> City uses sand. Low rust risk, but door seals will freeze shut." : "Salt is inactive. Risk of frozen handles outweighs benefit.";
-    } else if (isSaltySlush || isChinookThaw) {
-        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "🚜 ROADS ARE MESSY"; 
-        judgement = "Roads are a <b>river of brown slush.</b> Washing now is a waste of money.";
-    } else if (curTemp > -5) {
-        vText = "GO: PERFECT CONDITIONS"; vCol = "var(--green)"; status = "🚿 WASH NOW"; 
-        judgement = "Safe window found. Roads are dry. Rinse that salt before the next deep freeze!";
+    let hadRecentMelt = false;
+    let totalRecentPrec = 0;
+    // THE BRAIN: Scans Indices 0-5 (Wed, Thu, Fri, Sat, Sun, Mon)
+    for (let i = 0; i <= todayIdx; i++) {
+        if (data.daily.temperature_2m_max[i] > 0) hadRecentMelt = true;
+        totalRecentPrec += (data.daily.precipitation_sum[i] || 0);
     }
 
-    // UPDATE UI
+    const roadIsWet = (hadRecentMelt || totalRecentPrec > 0.1);
+    const sMin = isStrict ? -8 : -5; 
+    const sMax = isStrict ? 5 : 3; 
+    const isSaltySlush = (curTemp >= sMin && curTemp <= sMax && roadIsWet);
+    const isRefreezing = (curTemp <= 1 && roadIsWet);
+
+    // --- 3. DECISION TREE (THE VERDICT) ---
+    let vText = "WAIT", vCol = "var(--accent)", status = "🔵 NEUTRAL", judgement = "Analyzing...";
+
+    if (curTemp < -12) {
+        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "❄️ TOO COLD";
+        judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk from gravel." : "Mechanical risk (frozen seals) outweighs benefit.";
+    } 
+    else if (isSaltySlush) {
+        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "🚜 ROADS ARE MESSY"; 
+        judgement = (precToday > 0.1) ? 
+            "<b>Active Precipitation:</b> Fresh snow/rain is creating brown slush." : 
+            "<b>Residual Moisture:</b> 5-day memory detects a recent melt. Roads are still damp.";
+    } 
+    else if (curTemp > -6) {
+        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "🚿 WASH NOW"; 
+        judgement = roadIsWet ? "Safe temp, but <b>roads may be damp.</b> Only wash if you're doing a quick undercarriage rinse." : "<b>Ideal Conditions:</b> Main routes appear dry. Neutralize that salt!";
+    }
+
+    // --- 4. UPDATE PRIMARY UI ---
     document.getElementById('final-verdict').innerText = vText;
     document.getElementById('final-verdict').style.backgroundColor = vCol;
     document.body.style.backgroundColor = vCol;
@@ -404,80 +409,65 @@ async function updateWeather(isFullRefresh = true) {
     document.getElementById('cur-temp-display').innerText = Math.round(curTemp) + "°C Currently";
     document.getElementById('judgement-call').innerHTML = judgement;
 
-    // --- COHESIVE ROAD CHEMISTRY LOGIC ---
-let sI = "Liquid Brine";
-let chemMsg = "Peak corrosive state. Salt is a concentrated liquid acid.";
+    // --- 5. ROAD CHEMISTRY LOGIC ---
+    let sI = "Liquid Brine", chemMsg = "Peak corrosive state. Salt is a concentrated liquid acid.";
+    if (curTemp <= -17) { sI = "Dormant Dust"; chemMsg = "Salt cannot melt ice. High paint-chip risk."; }
+    else if (curTemp > -17 && curTemp < -5) { sI = "Abrasive Bond"; chemMsg = "Salt is sticky and bonding to metal."; }
+    else if (curTemp >= 3) { sI = "Diluted Runoff"; chemMsg = "Road spray is mostly water."; }
 
-if (curTemp <= -17) {
-    sI = "Dormant Dust";
-    chemMsg = "Salt cannot melt ice. High paint-chip risk from gravel.";
-} else if (curTemp > -17 && curTemp < -5) {
-    sI = "Abrasive Bond";
-    chemMsg = "Salt is sticky and bonding to metal. Moderate corrosion risk.";
-} else if (curTemp >= 3) { // Only switch to "Diluted" when it's warm enough for a real melt
-    sI = "Diluted Runoff";
-    chemMsg = "Road spray is mostly water. Salt is flushing away.";
-}
+    document.getElementById('salt-val').innerText = sI;
+    document.getElementById('salt-logic-text').innerHTML = `<b>🧪 ${sI}:</b> ${chemMsg}`;
 
-document.getElementById('salt-val').innerText = sI;
-document.getElementById('salt-logic-text').innerHTML = `<b>🧪 ${sI}:</b> ${chemMsg}`;
-
-
-    
-    // 5. BANNER ALERTS
+    // --- 6. BANNER ALERTS (RESTORED & RE-WIRED) ---
     const setDisp = (id, cond) => { const el = document.getElementById(id); if (el) el.style.display = cond ? 'flex' : 'none'; };
     setDisp('plugin-alert', curTemp <= -20);
     setDisp('regen-alert', isHighVoltage && curTemp <= -15);
-    setDisp('fluid-alert', curTemp < -8 && curTemp > -16);
+    setDisp('fluid-alert', curTemp < -8 && curTemp > -18);
     setDisp('chip-alert', curTemp < -14);
-    setDisp('rust-alert', (curTemp > -4 && curTemp < 2 && tToday > 0));
+    setDisp('rust-alert', (curTemp > -5 && curTemp < 3 && roadIsWet));
     setDisp('ice-alert', isRefreezing);
 
     if (curTemp < 0) {
-        let freezeTime = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
-        if (tYesterday < -15 && freezeTime > 8) freezeTime = 8;
-        document.getElementById('freeze-val').innerText = `${freezeTime} MIN UNTIL FREEZE ▼`;
+        let fT = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
+        const fVal = document.getElementById('freeze-val');
+        if (fVal) fVal.innerText = `${fT} MIN UNTIL FREEZE ▼`;
         setDisp('freeze-alert', true);
     } else { setDisp('freeze-alert', false); }
- 
 
-// --- 6. SOLAR WINDOW & OPENING ANALYSIS (CLEAN VERSION) ---
+    // --- 7. SOLAR WINDOW & OPENING ANALYSIS (FIXED SYNC) ---
 let foundWindow = false;
 
-const now = new Date();
-const tLoc = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+// FIX: Use .includes("WAIT") to catch "WAIT: SALTY SLUSH" or "NO GO"
+let startSearchAt = (vText.includes("WAIT") || vText.includes("NO GO")) ? (todayIdx + 1) : todayIdx;
 
-const tom = new Date(now);
-tom.setDate(tom.getDate() + 1);
-const tomLoc = new Date(tom.getTime() - (tom.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+for (let k = startSearchAt; k < data.daily.time.length; k++) {
+  const dMax = data.daily.temperature_2m_max[k];
+  const dPrec = data.daily.precipitation_sum[k];
 
-for (let k = 1; k < 9; k++) {
-  if (data.daily.temperature_2m_max[k] > -6 && data.daily.precipitation_sum[k] < 0.1) {
+  if (dMax > -6 && dPrec < 0.1) {
     const dDate = data.daily.time[k];
     const dateObj = new Date(dDate + "T00:00:00");
     const dateSuffix = dateObj.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
     
-    let friendlyDate;
-    if (dDate === tLoc) {
-      friendlyDate = `Today (${dateSuffix})`;
-    } else if (dDate === tomLoc) {
-      friendlyDate = `Tomorrow (${dateSuffix})`;
-    } else {
-      friendlyDate = dateObj.toLocaleDateString('en-CA', { weekday: 'long', month: 'short', day: 'numeric' });
-    }
-    
+    // Label Logic
+    let fDate = (k === todayIdx) ? `Today (${dateSuffix})` : 
+                (k === todayIdx + 1) ? `Tomorrow (${dateSuffix})` : 
+                dateSuffix;
+
+    // Window Calculation
     const dayTemps = data.hourly.temperature_2m.slice(k * 24, (k + 1) * 24);
     const maxHr = dayTemps.indexOf(Math.max(...dayTemps));
     const formatT = (h) => (h % 12 || 12) + (h >= 12 ? ' PM' : ' AM');
     
     const windowHTML = `☀️ Solar Window: ${formatT(maxHr - 1)} — ${formatT(maxHr + 2)}<br>` +
-                       `<span style="font-size:0.8em; font-weight:400; color:#94a3b8;">Peak thermal mass window.</span>`;
+                       `<span style="font-size:0.8em; font-weight:400; color:#94a3b8;">Cleanest road potential window.</span>`;
 
-    document.getElementById('next-val').innerText = friendlyDate;
-    document.getElementById('verdict-text').innerHTML = `<b>${friendlyDate}</b> is the best target. It avoids peak melt-slush and overnight ice bonding.`;
+    // Update UI
+    document.getElementById('next-val').innerText = fDate;
+    document.getElementById('verdict-text').innerHTML = `<b>${fDate}</b> is the next window where roads should be dry enough to maintain the wash.`;
 
-    if(document.getElementById('solar-settings-display')) document.getElementById('solar-settings-display').innerHTML = windowHTML;
-    if(document.getElementById('solar-verdict-display')) document.getElementById('solar-verdict-display').innerHTML = windowHTML;
+    if (document.getElementById('solar-settings-display')) document.getElementById('solar-settings-display').innerHTML = windowHTML;
+    if (document.getElementById('solar-verdict-display')) document.getElementById('solar-verdict-display').innerHTML = windowHTML;
 
     foundWindow = true;
     break; 
@@ -485,23 +475,25 @@ for (let k = 1; k < 9; k++) {
 }
 
 
-    // 7. FORECAST UI
+    // --- 8. YYC INSIGHTS & FORECAST UI ---
+    if (isFullRefresh) {
+      document.getElementById('sync-tag').innerText = "YYC SENSOR • UPDATED: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const fBox = document.getElementById('random-fact');
+      if (fBox && typeof yycInsights !== 'undefined') fBox.innerHTML = yycInsights[Math.floor(Math.random() * yycInsights.length)];
+    }
+
     let fH = ""; 
-    for (let j = 1; j < 6; j++) {
-      const dName = (j === 1) ? "Today" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[j] + "T00:00:00").getDay()];
+    for (let j = todayIdx; j < todayIdx + 5; j++) {
+      const dName = (j === todayIdx) ? "Today" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[j] + "T00:00:00").getDay()];
       fH += `<div style="flex:1;text-align:center;"><div style="font-size:0.6em;font-weight:900;color:#94a3b8;">${dName}</div><div style="font-size:1.1em;margin:5px 0;">${data.daily.precipitation_sum[j] > 0.1 ? '❄️' : '☀️'}</div><div style="font-size:0.8em;font-weight:900;">${Math.round(data.daily.temperature_2m_max[j])}°</div></div>`;
     }
     document.getElementById('forecast').innerHTML = fH;
 
-    if (isFullRefresh) {
-      document.getElementById('sync-tag').innerText = "YYC SENSOR • UPDATED: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      const fBox = document.getElementById('random-fact'); if (fBox) fBox.innerHTML = yycInsights[Math.floor(Math.random() * yycInsights.length)];
-    }
-
-    if (navigator.vibrate) navigator.vibrate(15);
     document.getElementById('card').style.display = 'block';
-    updateUI();
-  } catch (e) { console.error(e); document.getElementById('sync-tag').innerText = "YYC SENSOR • ERROR"; }
+  } catch (e) { 
+      console.error(e); 
+      document.getElementById('sync-tag').innerText = "YYC SENSOR • ERROR"; 
+  }
 }
 
 

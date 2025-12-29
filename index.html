@@ -14,6 +14,7 @@
     body::after {
     content: "";
     position: fixed;
+    overflow: hidden;
     top: 0;
     left: 0;
     width: 100%;
@@ -27,8 +28,10 @@
     #card { 
     background: var(--card); 
     width: 92%; 
+    position: relative;
     max-width: 400px; 
     border-radius: 40px; 
+    touch-action: none;
     overflow: hidden; 
     display: none; 
     box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
@@ -515,7 +518,7 @@ const card = document.getElementById('card');
 
 document.addEventListener('touchstart', e => {
     touchStartY = e.touches[0].pageY;
-}, {passive: true});
+}, {passive: false});
 
 document.addEventListener('touchmove', e => {
     const touchCurrentY = e.touches[0].pageY;

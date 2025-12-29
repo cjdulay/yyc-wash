@@ -193,15 +193,17 @@
   </button>
 </div>
 
-
-
 <div id="verdict-drawer" class="drawer">
   <b>📋 Opening Analysis:</b><br>
   <span id="verdict-text">--</span><br>
   <span id="solar-verdict-display" style="display:block; padding-bottom: 8px; margin-top:8px; color:var(--gold); font-weight:800;"></span>
-  <b>The "Lag" Rule:</b> Your car's chassis stays frozen much longer than the air. Driving for 15+ minutes before a wash warms the steel.
+  
+  <div id="what-if-container" style="margin-top:12px; padding-top:12px; border-top:1px solid #334155;">
+    <b style="color:#94a3b8; font-size:0.9em;">🤔 WHAT IF I WASH NOW?</b><br>
+    <span id="what-if-text" style="font-size:0.95em; color:#cbd5e1;">--</span>
+  </div>
+  <br><b>The "Lag" Rule:</b> Your car's chassis stays frozen much longer than the air. Driving for 15+ minutes before a wash warms the steel.
 </div>
-
 
 <div class="alerts-area">
   <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
@@ -496,6 +498,21 @@ async function updateWeather(isFullRefresh = true) {
         break; 
       }
     }
+    
+        // --- NEW: WHAT-IF LOGIC ---
+    const whatIfEl = document.getElementById('what-if-text');
+    if (whatIfEl) {
+        if (vText.includes("GO: MAINTENANCE")) {
+            whatIfEl.innerHTML = "Since roads are dry and the temperature is stable, a wash now will likely stay clean for at least 48 hours. Focus on the undercarriage to remove dormant salt dust.";
+        } else if (vText.includes("WAIT: SALTY SLUSH")) {
+            whatIfEl.innerHTML = "Washing now is a <b>waste of money.</b> The liquid brine on the roads will immediately coat your clean paint in a brown film before you get home. Wait for the 'Freeze-Dry' window.";
+        } else if (vText.includes("NO GO: FREEZE")) {
+            whatIfEl.innerHTML = "<b>Danger:</b> At these temps, water will flash-freeze in your locks and door seals instantly. Even a heated parkade won't dry the internal door latches fast enough to prevent a freeze-out.";
+        } else {
+            whatIfEl.innerHTML = "The app is currently analyzing road chemistry. Follow the Strategic Opening for the best results.";
+        }
+    }
+    
 
     let fH = ""; 
     for (let j = todayIdx; j < todayIdx + 5; j++) {

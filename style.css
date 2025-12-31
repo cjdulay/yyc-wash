@@ -187,3 +187,16 @@
   color: #38bdf8;
   transform: scale(0.95);
 }
+
+/* Mobile-friendly tap animation */
+#forecast {
+  transition: transform 0.1s ease, background 0.1s ease;
+  -webkit-tap-highlight-color: transparent; /* Removes the ugly blue box on Android/iOS */
+}
+
+#forecast:active {
+  transform: scale(0.96); /* Shrinks slightly under the thumb */
+  background: rgba(255, 255, 255, 0.12) !important;
+  filter: brightness(1.2);
+}
+

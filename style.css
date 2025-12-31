@@ -103,5 +103,4 @@ body::after {
 .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
 #ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; }
-.ios-icon { width: 20px; vertical-a
-lign: middle; }
+.ios-icon { width: 20px; vertical-align: middle; }

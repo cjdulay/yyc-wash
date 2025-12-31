@@ -1,64 +1,68 @@
-## [yyc-wash](https://cjdulay.github.io/yyc-wash/) <-- link here
+## [yyc-wash](https://cjdulay.github.io/yyc-wash/)
 
-# 🚗 YYC Car Wash Forecaster (V74)
+# 🚗 YYC Car Wash Forecaster (WIP)
 
-A specialized weather utility built for the unique challenges of driving in Calgary, Alberta. This app moves beyond simple temperature forecasts to provide actionable advice on vehicle maintenance, road safety, and "Strategic Wash Windows."
+A specialized weather utility and "thought partner" built for the unique challenges of driving in Calgary, Alberta. This app moves beyond simple temperature forecasts to provide actionable, physics-based advice on vehicle maintenance, road safety, and **Strategic Wash Windows**.
 
 ![YYC Wash Logo](logo.png)
 
 ## 📋 Project Overview
-Calgary winters are characterized by extreme temperature swings (Chinooks), abrasive road treatments ("Pickle"), and high-risk freezing conditions. This project helps drivers—particularly those with **hybrid vehicles**—navigate these conditions to protect their vehicle's finish and mechanical components.
+Calgary winters are defined by extreme temperature swings (Chinooks), abrasive road treatments ("Pickle"), and high-risk corrosive states. This project translates raw meteorological data into vehicle-specific insights, helping drivers—particularly **Hybrid and EV owners**—navigate the chemistry of the prairies to protect their vehicle's chassis and mechanical longevity.
 
 ---
 
-## ⚙️ Summary of Operations
-The core of this app is a custom logic engine that interprets data from the Open-Meteo API through a Calgary-specific lens.
+## 🔬 The Physics Lab: Methodology & Operations
+The core of this app is a custom logic engine that interprets data from the **Open-Meteo API** through a Calgary-specific lens.
 
-### 1. The Thermal Lag Logic ("The Ice Cube Effect")
+### 1. The 7-Day Strategic Scan
+I scan 168 hours of future data to find windows where roads will actually **dry**. I don't just look for sun; I look for the chemical transition from "tacky" brine to dry dust.
+* **The Brine Filter (The Tacky Zone):** I automatically skip hours between **-5°C and +2°C**. In this range, road salt becomes a sticky, acidic syrup (Brine) that "wicks" into your chassis and cannot be blown off.
+* **Sublimation Hunt:** I prioritize High Wind (>15km/h) and Deep Cold (-8°C or lower). This skips the liquid phase entirely, turning wet salt into a harmless dry powder via **Sublimation**.
+* **Melt-Lag Rule:** I factor in a 12–24 hour "Lag" after any snow event to ensure plows have finished and residual "Curb-Melt" has evaporated.
+
+### 2. Corrosion Speedometer (Arrhenius Kinetics)
+The app features a live diagnostic tool that calculates the rate of oxidation on your vehicle in real-time.
+* **Temperature Doubling:** Based on the **Arrhenius Equation**, the rate of chemical reaction (rust) roughly doubles for every 10°C increase in temperature. 
+* **The Garage Trap:** A frozen, salty car parked in a +10°C garage is rusting **10x faster** than one parked outside in the cold.
+* **Hygroscopic Effect:** Road salt is hygroscopic, meaning it pulls moisture out of the air. Even on dry days, salt "dust" on your chassis can start corroding if humidity rises.
+
+### 3. The "Ice Cube Effect" (Thermal Lag)
 * **The Science:** Steel is a high-density thermal mass. If Calgary was at -20°C overnight, the car's frame remains sub-zero long after the air warms up.
-* **The Feature:** The **Drying Window** timer is automatically capped if a deep freeze was detected in the last 24 hours. It tells you exactly how much time you have to hand-dry door seals before they freeze shut.
-
-### 2. Road Chemistry Phase Shifts
-* **Brine Phase (0°C to -12°C):** Salt is highly active and corrosive. The app prioritizes "Wash Now" verdicts.
-* **Inert Phase (Below -15°C):** Salt is chemically dead. The City switches to **Pickle** (97% gravel).
-* **The Feature:** The app triggers the **High Chip Risk** banner, shifting focus from rust prevention to rock chip avoidance.
-
-### 3. The Chinook "Slush-Cycle" Guard
-* **The Science:** Sudden warm-ups melt roadside snowbanks into a "brown river" of brine and grit.
-* **The Feature:** If a temperature spike follows a snowfall, the app enters **Wait Mode** and triggers the **Active Slush** alert, preventing users from wasting money on a wash that will be ruined within minutes.
-
-### 4. Black Ice & Refreezing Logic
-* **The Science:** Invisible ice forms when moisture from a daytime melt refreezes as the sun sets.
-* **The Feature:** An **Indigo Alert** triggers during "refreezing" conditions, specifically warning about bridges and overpasses.
+* **The Feature:** The **Drying Window** timer factors in this lag. It tells you exactly how much time you have to hand-dry door seals before the "heat sink" of your frame bonds them shut.
 
 ---
 
-## ✨ Key Features
-* **Hybrid Specialist Tips:** Advice on regenerative braking and salt-seizure prevention for brakes.
-* **Proactive Maintenance Nag:** Alerts users if it has been 7+ days since the last logged wash.
-* **Interactive Wash Log:** A local-storage history tracker to monitor protection frequency.
-* **Strategic Opening:** A forecast analyzer that finds the best "Dry Window" for a long-lasting clean.
+## ✨ Personalization & Vehicle Profiles
+The app allows users to customize their diagnostic sensitivity through two primary toggles:
+
+* **Hybrid / EV Mode:** Enables specialized alerts for **BMS (Battery Management System)** health. It warns about restricted regenerative braking in the deep cold and tracks "High Voltage" specific maintenance needs.
+* **Strict Mode:** Prioritizes paint longevity over a temporary shine. I will only suggest a "GO" window when roads are fully dry to prevent the immediate "Tacky Film" effect.
+* **Exposure Score:** A cumulative counter that tracks how many days your vehicle has been exposed to active brine since your last logged wash.
 
 ---
 
-## 📲 How to Install (iOS & Android)
-This tool is a **Progressive Web App (PWA)**. You don't need an app store; you can install it directly from your browser to your home screen for a full-screen experience.
+## ❄️ Cold Snap Checklist (Insights)
+* **PSI Physics:** For every 5°C drop, tires lose ~1 PSI. Check pressure when the "Plug-In" alert is active.
+* **Battery Strain:** At -18°C, a standard lead-acid battery loses 40% of its cranking power.
+* **Washer Fluid:** Only use -40°C rated fluid. Summer fluids will freeze and crack your reservoir during a Calgary snap.
 
-### For iPhone (iOS - Safari)
-1.  Open the website in **Safari**.
-2.  Tap the **Share** icon (the square with an arrow pointing up at the bottom).
-3.  Scroll down and tap **"Add to Home Screen."**
-4.  Tap "Add" in the top right corner.
+---
 
-### For Android (Chrome)
-1.  Open the website in **Chrome**.
-2.  Tap the **three-dot menu icon** in the top right corner.
-3.  Tap **"Add to Home Screen"** (or sometimes "Install App").
-4.  Follow the prompt to place the icon
+## 📲 Installation (PWA)
+This tool is a **Progressive Web App (PWA)**. Install it directly from your browser to your home screen for a full-screen, offline-ready experience.
+
+### iOS (Safari)
+1. Tap the **Share** icon.
+2. Select **"Add to Home Screen."**
+
+### Android (Chrome)
+1. Tap the **three-dot menu**.
+2. Select **"Install App"** or **"Add to Home Screen."**
 
 ---
 
 ## 🛠️ Maintenance Strategy
-* **Silicone Rule:** Apply silicone spray to rubber gaskets when the Drying Window is < 10 mins.
-* **Thermal Shock:** Pre-heat your car before washing in extreme cold to protect the windshield.
-* **Brake Clear:** Firmly engage mechanical brakes after a wash to evaporate moisture.
+* **Silicone Rule:** Apply silicone spray to weatherstripping when the Drying Window is < 10 mins.
+* **Thermal Shock:** Pre-heat your car before washing in extreme cold to protect the windshield from cracking.
+* **Brake Clear:** Firmly engage mechanical brakes after a wash to evaporate moisture and pr
+* event rotor seizure.

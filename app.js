@@ -170,14 +170,14 @@ function updateUI() {
     }
     
     if (exposureStatus) {
-        exposureStatus.innerHTML = days >= threshold ? "⚠️ <b>CRITICAL:</b> Salt pitted." : days >= (threshold / 2) ? "<b>MODERATE:</b> Brine bonding." : "<b>SAFE:</b> Minimal salt.";
+        exposureStatus.innerHTML = days >= threshold ? " <b>CRITICAL:</b> Salt pitted." : days >= (threshold / 2) ? "<b>MODERATE:</b> Brine bonding." : "<b>SAFE:</b> Minimal salt.";
     }
 
     // Render History List
     if (list) {
       list.innerHTML = h.map((item, idx) => `
         <div style="padding:6px 0; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;">
-          <span>📅 ${new Date(item).toLocaleDateString('en-CA', {month:'short', day:'numeric'})} <span style="color:#94a3b8; font-size:0.9em; margin-left:4px;">${new Date(item).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
+          <span> ${new Date(item).toLocaleDateString('en-CA', {month:'short', day:'numeric'})} <span style="color:#94a3b8; font-size:0.9em; margin-left:4px;">${new Date(item).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
           ${idx === 0 ? '<span onclick="undoWash()" style="color:#f43f5e; font-weight:bold; cursor:pointer;">Undo</span>' : ''}
         </div>`).join('');
     }
@@ -208,7 +208,7 @@ function updateUI() {
     if (list) {
         list.innerHTML = `
           <div style="text-align:center; padding:30px 10px; color:#64748b; font-size:0.85em;">
-            <div style="font-size:2em; margin-bottom:10px; opacity:0.3;">🚿</div>
+            <div style="font-size:2em; margin-bottom:10px; opacity:0.3;"></div>
             Waiting for your first entry to calculate chassis chemistry.
           </div>`;
     }
@@ -223,7 +223,7 @@ async function updateWeather(isFullRefresh = true) {
   const syncTag = document.getElementById('sync-tag');
 
   if (isFullRefresh) {
-    if (syncTag) syncTag.innerText = "YYC SENSOR • SYNCING...";
+    if (syncTag) syncTag.innerText = "YYC SENSOR � SYNCING...";
     if (card) {
         card.style.display = 'block'; // Ensure it's not hidden
         card.style.opacity = "0.5";   // Dim it
@@ -559,4 +559,35 @@ checkOnboarding();
 function resetOnboarding() {
     localStorage.removeItem('dismissedWelcome');
     location.reload(); // Refresh to show the banner again
+}
+
+function openWeatherApp() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    if (isIOS) {
+        // 1. Try Apple Weather App
+        window.location.href = "weather://";
+        
+        // Fallback for iOS
+        setTimeout(() => {
+            if (!document.hidden) {
+                window.open("https://weather.apple.com", "_blank");
+            }
+        }, 500);
+    } else if (isAndroid) {
+        // 2. Try to trigger the Google Weather Intent
+        // This is a special URI that Android recognizes to open the Google Weather card
+        window.location.href = "intent://#Intent;scheme=google.com/search?q=calgary+weather;package=com.google.android.googlequicksearchbox;end";
+        
+        // Fallback for Android (Standard Google Search)
+        setTimeout(() => {
+            if (!document.hidden) {
+                window.open("https://www.google.com/search?q=calgary+weather", "_blank");
+            }
+        }, 500);
+    } else {
+        // Desktop/Other
+        window.open("https://www.google.com/search?q=calgary+weather", "_blank");
+    }
 }

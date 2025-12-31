@@ -163,9 +163,17 @@ function saveProfile() {
   localStorage.setItem('isStrict', document.getElementById('risk-toggle').checked);
   updateWeather(false); 
 }
-document.getElementById('ev-toggle').checked = localStorage.getItem('isEV') === 'true';
-document.getElementById('risk-toggle').checked = localStorage.getItem('isStrict') !== 'false';
-updateWeather();
+window.addEventListener('DOMContentLoaded', () => {
+    const evToggle = document.getElementById('ev-toggle');
+    const riskToggle = document.getElementById('risk-toggle');
+    
+    if (evToggle) evToggle.checked = localStorage.getItem('isEV') === 'true';
+    if (riskToggle) riskToggle.checked = localStorage.getItem('isStrict') !== 'false';
+    
+    updateWeather().then(() => {
+        console.log("Weather Engine Initialized Successfully");
+    });
+});
 
 // --- 6. GESTURES ---
 let touchStartY = 0;

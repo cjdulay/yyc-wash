@@ -251,15 +251,15 @@ async function updateWeather(isFullRefresh = true) {
     const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
 
     // Main Verdict
-    let vText = "WAIT", vCol = "var(--accent)", status = " NEUTRAL", judgement = "Analyzing...";
+    let vText = "WAIT", vCol = "var(--accent)", status = "\u26AA NEUTRAL", judgement = "Analyzing...";
     if (curTemp < -12) {
-        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = " TOO COLD";
+        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "\u2744\ufe0f\u2744\ufe0f TOO COLD";
         judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk." : "Mechanical risk outweighs benefit.";
     } else if (effectiveWetness || (curTemp > -5 && curTemp < 3)) {
-        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = " ROADS ARE MESSY"; 
+        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "\ud83d\udca9 ROADS ARE MESSY"; 
         judgement = "<b>Liquid Brine:</b> Roads are tacky and salt is highly corrosive.";
     } else if (curTemp > -6) {
-        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = " WASH NOW"; 
+        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "\u2705 WASH NOW"; 
         judgement = "<b>Ideal Conditions:</b> Roads are dry and salt is dormant.";
     }
 
@@ -561,21 +561,29 @@ function resetOnboarding() {
     location.reload(); // Refresh to show the banner again
 }
 
-function openWeatherApp() {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+function openWeatherApp(e) {
+    if (e) e.preventDefault();
+    const ua = navigator.userAgent.toLowerCase();
+    
+    // Calgary coordinates for precise local loading
+    const lat = 51.0447;
+    const lon = -114.0719;
+    const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
 
-    if (isIOS) {
-        window.location.href = "weather://";
-        setTimeout(() => {
-            if (!document.hidden) {
-                window.open("https://weather.apple.com", "_blank");
-            }
-        }, 800);
-    } else {
-        // Android: This specific URL structure usually bypasses the Play Store redirect
-        const url = "https://www.google.com/search?q=calgary+weather&btnI=1"; 
-        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-        if (newWindow) newWindow.opener = null;
+    if (ua.includes("iphone") || ua.includes("ipad")) {
+        // iOS: Open native Apple Weather via Universal Link
+        window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
+    } 
+    else if (ua.includes("android")) {
+        // Android: This specific Intent targets the internal Google Weather Activity
+        const googleWeatherIntent = 
+            "intent:#Intent;action=android.intent.action.VIEW;component=com.google.android.googlequicksearchbox/com.google.android.apps.search.weather.WeatherExportedActivity;S.browser_fallback_url=" + 
+            encodeURIComponent(fallback) + ";end;";
+        
+        window.location.href = googleWeatherIntent;
+    } 
+    else {
+        // Desktop Fallback
+        window.open(fallback, "_blank");
     }
-
 }

@@ -30,6 +30,29 @@
     <div id="maintenance-nag" class="maintenance-nag" style="display:none;"> WASH OVERDUE: 7+ DAYS</div>
   </div>
   
+  <div id="welcome-banner" style="background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 12px; padding: 18px; margin: 0 20px 20px; color: #f8fafc; display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+    <span style="font-size: 0.85em; line-height: 1.6;">
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+        <span style="background: #38bdf8; color: #1e293b; font-size: 0.65em; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Physics-First</span>
+        <b style="color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">Winter Wash Forecaster • Calgary</b>
+      </div>
+      
+      I analyze Calgary's road chemistry to tell you <b>when</b> to wash, not just if it's sunny. 
+      <br>
+      <span onclick="toggleLogicLayers()" style="color:#38bdf8; text-decoration:underline; cursor:pointer; font-weight:700;">
+        How does a Strategic Opening work? →
+      </span>
+
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <b style="color:var(--gold);">FIRST STEP:</b> Tap <b>Vehicle Profile</b> below. Log your last wash to activate your chassis salt-load sensors and tracking.
+      </div>
+    </span>
+    <button onclick="dismissWelcome()" style="background:rgba(255,255,255,0.1); border:none; color:white; border-radius:6px; padding: 6px 10px; cursor:pointer; font-size:1em;">✕</button>
+  </div>
+</div>
+
+
 
     <div class="dashboard-grid">
     <div class="tile" onclick="toggleElement('salt-drawer')">
@@ -40,7 +63,8 @@
       <span class="stat-label">VEHICLE PROFILE</span>
       <span id="last-date" class="stat-val">None</span> 
     </div>
-      <div class="tile tile-wide" style="position: relative; overflow: visible;">
+    
+<div class="tile tile-wide" style="position: relative; overflow: visible;">
   <div id="strategic-btn" onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
     <span class="stat-label">STRATEGIC OPENING</span>
     <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
@@ -50,8 +74,8 @@
         style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">
     ⓘ
   </span>
-     
-      </div>
+</div>
+
   </div> <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
   
       <div id="layer-logic">
@@ -339,6 +363,14 @@
 
   <div id="sync-footer" class="footer">YYC CAR WASH FORECASTER </div>
 </div>
+
+<footer id="reset-link-container" style="text-align: center; margin-top: 10px; padding-bottom: 20px;">
+  <button onclick="resetOnboarding()" 
+          style="background: rgba(100, 116, 139, 0.05); border: 1px solid rgba(100, 116, 139, 0.1); color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 0.7em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px;">
+    <span>✨</span> Reset Welcome Tour
+  </button>
+</footer>
+
 
 <script src="app.js"></script>
 </body>

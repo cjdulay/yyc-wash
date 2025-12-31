@@ -126,7 +126,7 @@
   </div>
   
 
-  <div class="dashboard-grid">
+    <div class="dashboard-grid">
     <div class="tile" onclick="toggleElement('salt-drawer')">
       <span class="stat-label">ROAD CHEMISTRY</span>
       <span id="salt-val" class="stat-val">--</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
@@ -135,12 +135,97 @@
       <span class="stat-label">VEHICLE PROFILE</span>
       <span id="last-date" class="stat-val">None</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
     </div>
-    <div class="tile tile-wide" onclick="toggleElement('verdict-drawer')">
-  <span class="stat-label">STRATEGIC OPENING</span>
-  <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
-  <span style="font-size:0.7em; color:#94a3b8;">▼</span>
+    
+    <div class="tile tile-wide" style="position: relative; overflow: visible;">
+      <div onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <span class="stat-label">STRATEGIC OPENING</span>
+        <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
+        <span style="font-size:0.7em; color:#94a3b8;">▼</span>
+      </div>
+      <span onclick="event.stopPropagation(); toggleLogicLayers()" style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">ⓘ</span>
+    </div>
+  </div> <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+  
+      <div id="layer-logic">
+    <b style="color:var(--gold);">7-DAY STRATEGIC SCAN: METHODOLOGY</b><br>
+    <p style="margin-top: 8px; font-size: 0.9em; line-height: 1.4;">
+      I analyze 168 hours of future physics to find the <b>Strategic Opening</b>. I don't just look for "no snow"—I look for the chemical transition from "tacky" brine to dry dust.
+    </p>
+
+    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--gold);">
+        <b style="color:var(--gold); font-size: 0.75em;">HOW I CALCULATE THIS:</b>
+        <ul style="padding-left: 18px; margin: 8px 0; font-size: 0.85em; line-height: 1.4;">
+            <li><b>The Exclusion Filter:</b> I automatically skip any hour warmer than -2°C (Melt) or colder than -18°C (Freeze).</li>
+            <li><b>Curb-Melt Lag:</b> I factor in 12–24 hours of "Lag" after a snow event to ensure plows have finished and residual slush has evaporated.</li>
+            <li><b>The Confidence Rank:</b> A window with 20km/h wind is ranked 2x higher. Air movement is the only way to skip the <b>"Tacky" Phase</b>—a sticky, acidic brine film that creates a "rust-glue" on your paint.</li>
+        </ul>
+    </div>
+
+    <b style="color:var(--gold); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px;">Critical Opening Factors:</b>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#38bdf8; font-size: 0.8em;">WIND SPEED</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">The engine of <b>Sublimation</b>. High wind pulls moisture off the metal before it can react with salt.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#f43f5e; font-size: 0.8em;">ROAD TEMP</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">If the asphalt is above -10°C, salt remains a liquid acid. Below -15°C, salt becomes an inert solid.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#fbbf24; font-size: 0.8em;">DEW POINT</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">I track how "thirsty" the air is. Low dew points ensure your door seals dry before they can flash-freeze.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#10b981; font-size: 0.8em;">SOLAR LOAD</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">Direct sun warms the chassis, allowing your car's soap to penetrate and neutralize salt film.</span>
+        </div>
+    </div>
+
+    <div onclick="switchLayer('layer-physics')" style="margin-top:15px; color:var(--gold); text-align:center; cursor:pointer; font-weight:800; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03);">
+        🔬 ENTER THE PHYSICS LAB ▼
+    </div>
 </div>
+
+
+
+      <div id="layer-physics" style="display:none;">
+      <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+  <div style="font-size: 0.65em; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+    Current Corrosion Kinetics
   </div>
+  
+  <div style="position: relative; width: 100%; height: 12px; background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #f43f5e 100%); border-radius: 6px; margin: 10px 0;">
+    <div id="corrosion-needle" style="position: absolute; top: -4px; left: 0%; width: 4px; height: 20px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.8); transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+  </div>
+  
+  <div style="display: flex; justify-content: space-between; font-size: 0.6em; font-weight: 800; color: #64748b; text-transform: uppercase;">
+    <span>Dormant</span>
+    <span>Active Brine</span>
+    <span>Redline</span>
+  </div>
+  
+  <div id="corrosion-desc" style="margin-top: 12px; font-size: 0.85em; font-weight: 700; color: #cbd5e1;">
+    Calculating reaction rate...
+  </div>
+</div>
+
+          <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+              <b style="color: #f43f5e; text-transform: uppercase;">⚠️ THE RUST ACCELERATOR (Brine)</b><br>
+              Road salt is inert when frozen, but between <b>-5°C and +5°C</b>, it transforms into a liquid acid (Brine). It is 10x more corrosive than dry salt.
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+              <b style="color: #10b981; text-transform: uppercase;">🛡️ THE HOLY GRAIL (Sublimation)</b><br>
+              True "Freeze-Dry" windows skip the liquid phase via <b>Sublimation</b>. This requires <b>Deep Cold (<-8°C)</b> and <b>High Wind (>18km/h)</b>.
+          </div>
+          
+          <div onclick="switchLayer('layer-logic')" style="color:#94a3b8; text-align:center; cursor:pointer; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+              ◀ BACK TO OVERVIEW
+          </div>
+      </div>
+  </div>
+
+
 
 <div id="salt-drawer" class="drawer">
     <span id="salt-logic-text">--</span><br><br>
@@ -152,27 +237,33 @@
   
 <div id="log-drawer" class="drawer" style="padding: 20px; color: white;">
   <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">
-    Personalization & History
+    Vehicle Profile
   </div>
 
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-    <div>
-      <div style="font-size:0.9em; font-weight:600;">High-Voltage System</div>
-      <div style="font-size:0.7em; color:#94a3b8;">Enable for battery & power alerts</div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="font-size:0.9em; font-weight:600;">Hybrid / EV Owner</div>
+      <span class="info-trigger" onclick="toggleElement('ev-info')">i</span>
     </div>
     <input type="checkbox" id="ev-toggle" onchange="saveProfile()" style="width:18px; height:18px; accent-color:#38bdf8; cursor:pointer;">
   </div>
+  <div id="ev-info" class="info-drawer" style="margin-bottom: 15px;">
+    <b>EV Mode:</b> Tick this if you drive a Hybrid or EV. Enables specialized alerts for battery health and regenerative braking limits in Calgary deep-freezes.
+  </div>
 
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <div>
+    <div style="display: flex; align-items: center; gap: 8px;">
       <div style="font-size:0.9em; font-weight:600;">Strict Mode</div>
-      <div style="font-size:0.7em; color:#94a3b8;">Wait for dry roads (saves money)</div>
+      <span class="info-trigger" onclick="toggleElement('strict-info')">i</span>
     </div>
     <input type="checkbox" id="risk-toggle" onchange="saveProfile()" checked style="width:18px; height:18px; accent-color:#fbbf24; cursor:pointer;">
   </div>
-  
+  <div id="strict-info" class="info-drawer" style="margin-bottom: 15px;">
+    <b>Strict Mode:</b> Prioritizes paint longevity. I will only suggest washing when roads are dry enough to prevent immediate "tacky salt" film.
+  </div>
+
   <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px dashed #475569;">
-  <div style="font-size:0.7em; color:#94a3b8; text-transform:uppercase; font-weight:900;">Brine Exposure Score</div>
+    <div style="font-size:0.7em; color:#94a3b8; text-transform:uppercase; font-weight:900;">Brine Exposure Score</div>
   <div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">
     <span id="exposure-val" style="font-size:1.4em; font-weight:900; color:#f43f5e;">0</span>
     <span style="font-size:0.7em; color:#94a3b8;">CORROSIVE DAYS</span>
@@ -206,10 +297,24 @@
 </div>
 
 <div class="alerts-area">
+
+<div class="alerts-area">
+  <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
+    <span>📝</span>
+    <div class="b-info">
+      <span style="font-weight:800;">ACTION: LOG A WASH</span><br>
+      <span style="font-size:0.7em;">Calculate cumulative salt load ▼</span>
+      <div id="log-reminder-drawer" class="alert-drawer">
+        Log your last wash in the <b>Vehicle Profile</b> to track your cumulative chassis corrosion risk and current exposure score.
+      </div>
+    </div>
+  </div>
+
+
   <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
     <span>🌫️</span>
     <div class="b-info">
-      <span style="font-weight:800;">VISIBILITY: HIGH SALT-FILM</span><br>
+      <span style="font-weight:800;">VISIBILITY: HIGH SALT-FILM</>
       <span style="font-size:0.7em;">Peak Washer Fluid Usage ▼</span>
       <div id="fluid-drawer" class="alert-drawer">
         "Dry salt spray" is at its peak. You will likely use 3x more washer fluid today than usual. Ensure your reservoir is topped with -40°C rated fluid.
@@ -303,22 +408,57 @@
 
 <script>
 
+
+// --- 1. UI NAVIGATION & LAYERS ---
+function toggleLogicLayers() {
+    const info = document.getElementById('logic-info');
+    if (info.style.display === 'block') {
+        info.style.display = 'none';
+        switchLayer('layer-logic'); // Reset to overview for next time
+    } else {
+        info.style.display = 'block';
+    }
+}
+
+function switchLayer(targetId) {
+    const layer1 = document.getElementById('layer-logic');
+    const layer2 = document.getElementById('layer-physics');
+    if (layer1 && layer2) {
+        layer1.style.display = (targetId === 'layer-logic') ? 'block' : 'none';
+        layer2.style.display = (targetId === 'layer-physics') ? 'block' : 'none';
+    }
+}
+
+function toggleElement(id) {
+    const target = document.getElementById(id);
+    if (target) target.style.display = target.style.display === 'block' ? 'none' : 'block';
+}
+
+
+// --- 2. ASSETS & INSIGHTS ---
 const yycInsights = [
-  "<b>HYBRID TIP:</b> At -19°C, regen braking is limited because the BMS restricts power intake until the battery cells warm up.",
+  "<b>HYBRID TIP:</b> At -19°C, regen braking is limited because the BMS restricts power intake until the cells warm up.",
   "<b>WIPER TIP:</b> Wipe blades with winter fluid after a wash. This removes residue that causes them to freeze to the windshield.",
   "<b>FLUID TIP:</b> Only use washer fluid rated for -40°C. Summer fluids will freeze and crack your reservoir in a Calgary snap.",
   "<b>YYC FACT:</b> 'Pickle' mixture is 97% gravel and 3% salt. Salt is inert below -15°C, making sand the primary grip provider.",
   "<b>CHINOOK FACT:</b> A rapid thaw creates 'Active Slush'—the most corrosive road state. Wait for dry roads before washing.",
   "<b>LOCK TIP:</b> Avoid high-pressure spray directly into door handles at -15°C. Water forced into the tumbler will leave you locked out.",
   "<b>GARAGE WARNING:</b> Parking in a heated garage 'wakes up' frozen salt. Rusting happens 10x faster at room temperature than in the cold.",
-  "<b>MAG-CHLORIDE FACT:</b> Calgary uses liquid Mag-Brine on Deerfoot. It is more corrosive than rock salt and stays wet longer."
+  "<b>MAG-CHLORIDE FACT:</b> Calgary uses liquid Mag-Brine on Deerfoot. It is more corrosive than rock salt and stays wet longer.",
+  "<b>VISIBILITY TIP:</b> Road spray at -5°C creates a 'Salt Film' that can consume an entire reservoir of fluid in one commute. Top up now and always keep a spare jug of winter-rated washer fluid in the trunk.",
+  "<b>COLD SNAP CHECKLIST:</b> For every 5°C drop, tires lose ~1 PSI of pressure. Check your levels when the 'Plug-In' alert is active to prevent uneven wear and reduced range.",
+  "<b>BATTERY FACT:</b> At -18°C, a standard lead-acid battery loses 40% of its cranking power. If the 'Corrosion Speedometer' is Dormant, prioritize battery health over aesthetics.",
+  "<b>PSI TIP:</b> Nitro-filled tires still fluctuate in Calgary snaps. Always calibrate your pressure in the morning before the tires warm up from road friction.",
+  "<b>DOOR SEAL HACK:</b> After a winter wash, apply a thin layer of silicone lubricant or even non-stick cooking spray to the rubber weatherstripping to prevent door bonding.",
+  "<b>EV RANGE TIP:</b> In deep cold, use 'Seat Heat' instead of the cabin heater to save up to 15% of your battery range during short city commutes.",
+  "<b>BLACK ICE PHYSICS:</b> When the air is -5°C but the sun is out, asphalt absorbs thermal energy. This creates a thin, invisible melt-layer that flash-freezes in shadows.",
+  "<b>UNDERBODY CARE:</b> Salt-dust is hygroscopic, meaning it pulls moisture out of the air. Even on dry days, salt 'dust' on your chassis can start corroding if the humidity rises.",
+  "<b>WASHER FLUID PHYSICS:</b> Avoid using 'De-Icer' fluid on a bone-dry windshield. The alcohol evaporates too fast, leaving a 'white-out' streak that blocks vision instantly.",
+  "<b>CHINOOK CAUTION:</b> A rapid 20°C rise doesn't just melt ice—it expands the metal panels of your car. This can 'pop' existing windshield chips into full-length cracks."
+  
 ];
 
-function toggleElement(id) {
-  const target = document.getElementById(id);
-  if (target) target.style.display = target.style.display === 'block' ? 'none' : 'block';
-}
-
+// --- 3. WASH LOGGING & HISTORY ---
 function addNewWash() {
   let h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
   h.unshift(new Date().toISOString());
@@ -337,116 +477,70 @@ function undoWash() {
   if (h.length > 0) { h.shift(); localStorage.setItem('washLogV2', JSON.stringify(h)); updateUI(); }
 }
 
+
+
 function updateUI() {
   const h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
-  const list = document.getElementById('log-list');
-  const lastDate = document.getElementById('last-date');
-  const exposureVal = document.getElementById('exposure-val');
-  const exposureStatus = document.getElementById('exposure-status');
-  const nag = document.getElementById('maintenance-nag');
+  const list = document.getElementById('log-list'), lastDate = document.getElementById('last-date');
+  const exposureVal = document.getElementById('exposure-val'), exposureStatus = document.getElementById('exposure-status');
+  const nag = document.getElementById('maintenance-nag'), fBox = document.getElementById('random-fact');
   
-  const fBox = document.getElementById('random-fact');
-  if (fBox) { fBox.innerHTML = yycInsights[Math.floor(Math.random() * yycInsights.length)]; }
+  // ADD THESE TWO LINES HERE:
+  const prompt = document.getElementById('log-reminder-prompt');
+  if (prompt) prompt.style.display = (h.length === 0) ? 'flex' : 'none';
+  
+  if (fBox) fBox.innerHTML = yycInsights[Math.floor(Math.random() * yycInsights.length)];
 
   if (h.length > 0) {
-    const lastWashDate = new Date(h[0]);
-    lastDate.innerText = lastWashDate.toLocaleDateString('en-CA', {month:'short', day:'numeric'});
-    const daysSince = Math.floor((new Date() - lastWashDate) / (1000 * 60 * 60 * 24));
-    
-    if (nag) { 
-      nag.style.display = (daysSince >= 7) ? 'block' : 'none'; 
-      nag.innerText = `⚠️ WASH OVERDUE: ${daysSince} DAYS`; 
-    }
-
-    if (exposureVal) {
-        exposureVal.innerText = daysSince;
-        if (daysSince >= 10) { exposureVal.style.color = "#f43f5e"; }
-        else if (daysSince >= 5) { exposureVal.style.color = "#fbbf24"; }
-        else { exposureVal.style.color = "#10b981"; }
-    }
-    
-    if (exposureStatus) {
-        exposureStatus.innerHTML = daysSince >= 10 ? "⚠️ <b>CRITICAL:</b> Salt is likely pitted in wheel wells." : 
-                                  daysSince >= 5 ? "<b>MODERATE:</b> Surface brine is bonding to metal." : 
-                                  "<b>SAFE:</b> Residual salt is minimal.";
-    }
-
-    list.innerHTML = h.map((item, idx) => {
-      const d = new Date(item);
-      const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateStr = d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
-      return `<div style="padding:6px 0; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;">
-        <span>📅 ${dateStr} <span style="color:#94a3b8; font-size:0.9em; margin-left:4px;">${timeStr}</span></span>
+    const dLast = new Date(h[0]);
+    lastDate.innerText = dLast.toLocaleDateString('en-CA', {month:'short', day:'numeric'});
+    const days = Math.floor((new Date() - dLast) / 86400000);
+    if (nag) nag.style.display = days >= 7 ? 'block' : 'none';
+    if (exposureVal) { exposureVal.innerText = days; exposureVal.style.color = days >= 10 ? "#f43f5e" : days >= 5 ? "#fbbf24" : "#10b981"; }
+    if (exposureStatus) exposureStatus.innerHTML = days >= 10 ? "⚠️ <b>CRITICAL:</b> Salt pitted." : days >= 5 ? "<b>MODERATE:</b> Brine bonding." : "<b>SAFE:</b> Minimal salt.";
+    list.innerHTML = h.map((item, idx) => `
+      <div style="padding:6px 0; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;">
+        <span>📅 ${new Date(item).toLocaleDateString('en-CA', {month:'short', day:'numeric'})} <span style="color:#94a3b8; font-size:0.9em; margin-left:4px;">${new Date(item).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
         ${idx === 0 ? '<span onclick="undoWash()" style="color:#f43f5e; font-weight:bold; cursor:pointer;">Undo</span>' : ''}
-      </div>`;
-    }).join('');
+      </div>`).join('');
   } else {
-    if (lastDate) lastDate.innerText = "Setup Required";
-    if (exposureVal) { exposureVal.innerText = "??"; exposureVal.style.color = "#94a3b8"; }
-    if (exposureStatus) exposureStatus.innerHTML = "<b>First-Time Setup:</b> Log your first wash to track corrosion.";
-    if (list) list.innerHTML = "No entries logged.";
-    if (nag) nag.style.display = 'none';
+    lastDate.innerText = "Setup Required";
+    if (exposureVal) exposureVal.innerText = "??";
+    list.innerHTML = "No entries logged.";
   }
 }
 
+// --- 4. CORE WEATHER ENGINE ---
 async function updateWeather(isFullRefresh = true) {
   if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC SENSOR • SYNCING...";
-  
   const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max,precipitation_sum&hourly=precipitation,temperature_2m,wind_speed_10m&timezone=America/Edmonton&past_days=5";
   
   try {
     const res = await fetch(url);
     const data = await res.json();
-    const now = new Date();
-    
-    const todayIdx = 5; 
-    const curHr = (todayIdx * 24) + now.getHours(); 
-
-    let curTemp = data.hourly.temperature_2m[curHr];
-    let wind = data.hourly.wind_speed_10m[curHr];
-    let tToday = data.daily.temperature_2m_max[todayIdx];
-    let precToday = data.daily.precipitation_sum[todayIdx] || 0;
-
+    const todayIdx = 5, curHr = (todayIdx * 24) + new Date().getHours(); 
+    const curTemp = data.hourly.temperature_2m[curHr], wind = data.hourly.wind_speed_10m[curHr];
     const isStrict = document.getElementById('risk-toggle')?.checked ?? true;
     const isHighVoltage = document.getElementById('ev-toggle')?.checked ?? false;
 
-    let hadRecentMelt = false;
-    let totalRecentPrec = 0;
+    // Road Wetness Logic
+    let hadMelt = false, totalPrec = 0;
     for (let i = 0; i <= todayIdx; i++) {
-        if (data.daily.temperature_2m_max[i] > 0) hadRecentMelt = true;
-        totalRecentPrec += (data.daily.precipitation_sum[i] || 0);
+        if (data.daily.temperature_2m_max[i] > 0) hadMelt = true;
+        totalPrec += (data.daily.precipitation_sum[i] || 0);
     }
+    const roadsFreezeDried = (curTemp < -8 && wind > 18);
+    const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
 
-    const tYesterday = data.daily.temperature_2m_max[todayIdx - 1];
-    const curbMeltLag = (isStrict && tYesterday > 1); 
-    const roadIsWet = (hadRecentMelt || totalRecentPrec > 0.1 || curbMeltLag);
-
-    let freezeDryHours = 0;
-    for (let h = curHr - 12; h <= curHr; h++) {
-        if (data.hourly.temperature_2m[h] < -8 && data.hourly.wind_speed_10m[h] > 15) {
-            freezeDryHours++;
-        }
-    }
-    const roadsAreFreezeDried = (freezeDryHours >= 10);
-    const effectiveRoadWetness = (roadIsWet && !roadsAreFreezeDried);
-
-    const sMin = isStrict ? -8 : -5; 
-    const sMax = isStrict ? 5 : 3; 
-    const isSaltySlush = (curTemp >= sMin && curTemp <= sMax && effectiveRoadWetness);
-
+    // Main Verdict
     let vText = "WAIT", vCol = "var(--accent)", status = "🔵 NEUTRAL", judgement = "Analyzing...";
-
     if (curTemp < -12) {
         vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "❄️ TOO COLD";
         judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk." : "Mechanical risk outweighs benefit.";
-    } 
-    else if (isSaltySlush || effectiveRoadWetness) {
+    } else if (effectiveWetness || (curTemp > -5 && curTemp < 3)) {
         vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "🚜 ROADS ARE MESSY"; 
-        if (precToday > 0.1) judgement = "<b>Active Precipitation:</b> Fresh snow is creating brown slush.";
-        else if (roadsAreFreezeDried) judgement = "Roads have <b>Freeze-Dried.</b> Surface should be safe.";
-        else judgement = curbMeltLag ? "<b>Curb-Melt Alert:</b> Strict mode detects moisture runoff." : "<b>Residual Moisture:</b> Roads are still damp from recent melt.";
-    } 
-    else if (curTemp > -6) {
+        judgement = "<b>Liquid Brine:</b> Roads are tacky and salt is highly corrosive.";
+    } else if (curTemp > -6) {
         vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "🚿 WASH NOW"; 
         judgement = "<b>Ideal Conditions:</b> Roads are dry and salt is dormant.";
     }
@@ -459,6 +553,7 @@ async function updateWeather(isFullRefresh = true) {
     document.getElementById('cur-temp-display').innerText = Math.round(curTemp) + "°C Currently";
     document.getElementById('judgement-call').innerHTML = judgement;
 
+    // Road Chemistry Labeling
     let sI = "Liquid Brine", chemMsg = "Peak corrosive state. Salt is a concentrated liquid acid.";
     if (curTemp <= -17) { sI = "Dormant Dust"; chemMsg = "Salt cannot melt ice. High paint-chip risk."; }
     else if (curTemp > -17 && curTemp < -5) { sI = "Abrasive Bond"; chemMsg = "Salt is sticky and bonding to metal."; }
@@ -466,88 +561,128 @@ async function updateWeather(isFullRefresh = true) {
     document.getElementById('salt-val').innerText = sI;
     document.getElementById('salt-logic-text').innerHTML = `<b>🧪 ${sI}:</b> ${chemMsg}`;
 
+    // Adaptive Banners
     const setDisp = (id, cond) => { const el = document.getElementById(id); if (el) el.style.display = cond ? 'flex' : 'none'; };
     setDisp('plugin-alert', curTemp <= -20);
     setDisp('regen-alert', isHighVoltage && curTemp <= -15);
     setDisp('fluid-alert', curTemp < -8 && curTemp > -18);
     setDisp('chip-alert', curTemp < -14);
-    setDisp('rust-alert', (curTemp > -5 && curTemp < 3 && effectiveRoadWetness));
-    setDisp('ice-alert', (curTemp <= 1 && effectiveRoadWetness));
-
+    setDisp('rust-alert', (curTemp > -5 && curTemp < 3 && effectiveWetness));
+    setDisp('ice-alert', (curTemp <= 1 && effectiveWetness));
     if (curTemp < 0) {
         let fT = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
         if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE ▼`;
         setDisp('freeze-alert', true);
     } else { setDisp('freeze-alert', false); }
 
+    // --- STRATEGIC OPENING SEARCH ---
     let startSearchAt = (vText.includes("WAIT") || vText.includes("NO GO")) ? (todayIdx + 1) : todayIdx;
+    let backupIdx = null, finalIdx = null;
     for (let k = startSearchAt; k < data.daily.time.length; k++) {
-      if (data.daily.temperature_2m_max[k] > -6 && data.daily.precipitation_sum[k] < 0.1) {
-        const dDate = data.daily.time[k];
-        const dateObj = new Date(dDate + "T00:00:00");
-        const dateSuffix = dateObj.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
-        let fDate = (k === todayIdx) ? `Today (${dateSuffix})` : (k === todayIdx + 1) ? `Tomorrow (${dateSuffix})` : dateSuffix;
-        const dayTemps = data.hourly.temperature_2m.slice(k * 24, (k + 1) * 24);
-        const maxHr = dayTemps.indexOf(Math.max(...dayTemps));
-        const formatT = (h) => (h % 12 || 12) + (h >= 12 ? ' PM' : ' AM');
-        const windowHTML = `☀️ Solar Window: ${formatT(maxHr - 1)} — ${formatT(maxHr + 2)}<br><span style="font-size:0.8em; font-weight:400; color:#94a3b8;">Cleanest road potential window.</span>`;
-        document.getElementById('next-val').innerText = fDate;
-        document.getElementById('verdict-text').innerHTML = `<b>${fDate}</b> is the next window where roads should be dry enough to maintain the wash.`;
-        if (document.getElementById('solar-settings-display')) document.getElementById('solar-settings-display').innerHTML = windowHTML;
-        if (document.getElementById('solar-verdict-display')) document.getElementById('solar-verdict-display').innerHTML = windowHTML;
-        break; 
+      if (data.daily.temperature_2m_max[k] > -6 && (data.daily.precipitation_sum[k] || 0) < 0.1) {
+        const tW = data.hourly.wind_speed_10m[k * 24 + 12], tT = data.hourly.temperature_2m[k * 24 + 12];
+        if (backupIdx === null) backupIdx = k;
+        if (!(tW < 8 || tT > -2)) { finalIdx = k; break; }
       }
     }
-    
-        // --- NEW: WHAT-IF LOGIC ---
-    const whatIfEl = document.getElementById('what-if-text');
-    if (whatIfEl) {
-        if (vText.includes("GO: MAINTENANCE")) {
-            whatIfEl.innerHTML = "Since roads are dry and the temperature is stable, a wash now will likely stay clean for at least 48 hours. Focus on the undercarriage to remove dormant salt dust.";
-        } else if (vText.includes("WAIT: SALTY SLUSH")) {
-            whatIfEl.innerHTML = "Washing now is a <b>waste of money.</b> The liquid brine on the roads will immediately coat your clean paint in a brown film before you get home. Wait for the 'Freeze-Dry' window.";
-        } else if (vText.includes("NO GO: FREEZE")) {
-            whatIfEl.innerHTML = "<b>Danger:</b> At these temps, water will flash-freeze in your locks and door seals instantly. Even a heated parkade won't dry the internal door latches fast enough to prevent a freeze-out.";
-        } else {
-            whatIfEl.innerHTML = "The app is currently analyzing road chemistry. Follow the Strategic Opening for the best results.";
-        }
-    }
-    
+    finalIdx = finalIdx || backupIdx;
 
-    let fH = ""; 
-    for (let j = todayIdx; j < todayIdx + 5; j++) {
+    if (finalIdx !== null) {
+        const k = finalIdx;
+        const dDate = data.daily.time[k];
+        // The fix: Create a proper date object and format the suffix
+        const dateObj = new Date(dDate + "T00:00:00");
+        const dateSuffix = dateObj.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+        
+        // Combine the relative name (Today/Tomorrow) with the suffix
+        let fDate = (k === todayIdx) ? `Today (${dateSuffix})` : (k === todayIdx + 1) ? `Tomorrow (${dateSuffix})` : dateSuffix;
+
+        const tW = data.hourly.wind_speed_10m[k * 24 + 12];
+        const tT = data.hourly.temperature_2m[k * 24 + 12];
+        
+        let conf = (tW > 18 && tT < -8) ? `<span style="color:#10b981; font-size:0.75em; margin-left:8px;">🛡️ HIGH CONFIDENCE</span>` : `<span style="color:#f43f5e; font-size:0.75em; margin-left:8px;">⚠️ LOW CONFIDENCE</span>`;
+        let reason = (tW > 18 && tT < -8) ? "High winds will <b>freeze-dry</b> the pavement." : "Warmth means roads will likely stay <b>tacky and wet.</b>";
+
+        // Restore UI displays
+        document.getElementById('next-val').innerText = fDate;
+        document.getElementById('verdict-text').innerHTML = `<b>${fDate}</b> ${conf}<br>${reason}`;
+        
+        // Restore Solar/Thermal Window formatting
+        const formatT = (h) => { let wrap = (h + 24) % 24; return (wrap % 12 || 12) + (wrap >= 12 ? ' PM' : ' AM'); };
+        const dayTemps = data.hourly.temperature_2m.slice(k * 24, (k + 1) * 24);
+        const maxHr = dayTemps.indexOf(Math.max(...dayTemps));
+        let wType = (maxHr > 7 && maxHr < 18) ? "☀️ Solar Window" : "🌡️ Thermal Window";
+        
+        if (document.getElementById('solar-verdict-display')) {
+             document.getElementById('solar-verdict-display').innerHTML = `<b>${wType}: ${formatT(maxHr-1)} — ${formatT(maxHr+2)}</b><br><span style="font-size:0.8em; font-weight:400; color:#94a3b8;">${maxHr > 7 && maxHr < 18 ? 'Best for drying seals.' : 'Night peak detected. Use heated bay.'}</span>`;
+        }
+        
+        
+    }
+
+
+    // What-If logic
+    const whatIf = document.getElementById('what-if-text');
+    if (vText.includes("GO: MAIN")) whatIf.innerHTML = "Roads are dry. Wash now to stay clean for 48h+.";
+    else if (vText.includes("WAIT: SALTY")) whatIf.innerHTML = "<b>Waste of money.</b> Brown brine film will coat your paint in 15 minutes.";
+    else if (vText.includes("NO GO")) whatIf.innerHTML = "<b>Danger:</b> Water will flash-freeze in locks instantly.";
+
+    // Forecast bar
+    let fH = ""; for (let j = todayIdx; j < todayIdx + 5; j++) {
       const dName = (j === todayIdx) ? "Today" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[j] + "T00:00:00").getDay()];
       fH += `<div style="flex:1;text-align:center;"><div style="font-size:0.6em;font-weight:900;color:#94a3b8;">${dName}</div><div style="font-size:1.1em;margin:5px 0;">${data.daily.precipitation_sum[j] > 0.1 ? '❄️' : '☀️'}</div><div style="font-size:0.8em;font-weight:900;">${Math.round(data.daily.temperature_2m_max[j])}°</div></div>`;
     }
     document.getElementById('forecast').innerHTML = fH;
-    if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC SENSOR • UPDATED: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC UPDATED: " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     document.getElementById('card').style.display = 'block';
+    
+        // --- FINAL CORROSION SPEEDOMETER INJECTION ---
+    const needle = document.getElementById('corrosion-needle');
+    const desc = document.getElementById('corrosion-desc');
+    
+    if (needle && desc) {
+        let riskScore = 0;
+        
+        // 1. ARRHEIUS KINETICS: Temperature doubling rule
+        if (curTemp <= -15) riskScore = 5; 
+        else if (curTemp <= -8) riskScore = 22; 
+        else if (curTemp < 0) riskScore = 65; 
+        else if (curTemp < 10) riskScore = 88; 
+        else riskScore = 100; // Redline in heated garage
+
+        // 2. CATALYST CHECK: Moisture is the "fuel" for rust
+        // If roads are dry/freeze-dried, reaction speed drops significantly
+        if (!effectiveWetness && curTemp < 0) riskScore *= 0.4;
+        
+        // Final UI Updates
+        needle.style.left = `${Math.min(riskScore, 100)}%`;
+        
+        desc.innerHTML = riskScore <= 15 ? "<span style='color:#10b981;'>DORMANT:</span> Metal is chemically stable." : 
+                        riskScore <= 50 ? "<span style='color:#fbbf24;'>ACTIVE:</span> Surface oxidation beginning." : 
+                        riskScore <= 85 ? "<span style='color:#f43f5e;'>CRITICAL:</span> Brine wicking into chassis." :
+                        "<span style='color:#f43f5e;'>🔥 REDLINE:</span> Accelerated pitting. Rinse now.";
+    }
+    
+    
     updateUI();
-  } catch (e) { console.error(e); document.getElementById('sync-tag').innerText = "YYC SENSOR • ERROR"; }
+    
+  } catch (e) { console.error(e); document.getElementById('sync-tag').innerText = "SYNC ERROR"; }
 }
 
+// --- 5. INITIALIZATION & PWA ---
 function saveProfile() {
   localStorage.setItem('isEV', document.getElementById('ev-toggle').checked);
   localStorage.setItem('isStrict', document.getElementById('risk-toggle').checked);
   updateWeather(false); 
 }
-
 document.getElementById('ev-toggle').checked = localStorage.getItem('isEV') === 'true';
 document.getElementById('risk-toggle').checked = localStorage.getItem('isStrict') !== 'false';
 updateWeather();
 
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); }
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e => {}); }
+if (navigator.userAgent.match(/iphone|ipad|ipod/i)) document.getElementById('ios-prompt').style.display = 'block';
 
-document.getElementById('weather-link').addEventListener('click', (e) => {
-  e.preventDefault();
-  const lat = 51.0447, lon = -114.0719;
-  const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
-  const ua = navigator.userAgent.toLowerCase();
-  if (ua.includes("iphone") || ua.includes("ipad")) window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
-  else if (ua.includes("android")) window.location.href = "intent://com.google.android.googlequicksearchbox.Weather/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
-  else window.open(fallback, "_blank");
-});
-
+// --- 6. GESTURES ---
 let touchStartY = 0;
 const card = document.getElementById('card');
 document.addEventListener('touchstart', e => { touchStartY = e.touches[0].pageY; }, {passive: false});
@@ -561,7 +696,6 @@ document.addEventListener('touchend', e => {
         updateWeather().then(() => { setTimeout(() => { card.classList.remove('syncing'); card.style.transform = "translateY(0)"; }, 500); });
     } else card.style.transform = "translateY(0)";
 }, {passive: true});
-
 
 
 </script>

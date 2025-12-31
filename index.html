@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <title>YYC CAR WASH FORECASTER</title>
-  <link rel="stylesheet" href="style.css?v=13">
+   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -23,124 +23,320 @@
     <div id="sync-tag" style="font-size: 0.6em; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">
         YYC SENSOR • SYNCING...
     </div>
+    
     <div id="status-badge" class="badge">--</div>
     <div id="cur-temp-display" class="cur-temp-sub">--&deg;C Currently</div>
     <div id="judgement-call" class="judgement-call-text">--</div>
-    <div id="maintenance-nag" class="maintenance-nag" style="display:none;">⚠️ WASH OVERDUE: 7+ DAYS</div>
+    <div id="maintenance-nag" class="maintenance-nag" style="display:none;"> WASH OVERDUE: 7+ DAYS</div>
   </div>
+  
 
-  <div class="dashboard-grid">
+    <div class="dashboard-grid">
     <div class="tile" onclick="toggleElement('salt-drawer')">
       <span class="stat-label">ROAD CHEMISTRY</span>
-      <span id="salt-val" class="stat-val">--</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
+      <span id="salt-val" class="stat-val">--</span> 
     </div>
     <div class="tile" onclick="toggleElement('log-drawer')">
       <span class="stat-label">VEHICLE PROFILE</span>
-      <span id="last-date" class="stat-val">None</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
+      <span id="last-date" class="stat-val">None</span> 
     </div>
+    
     <div class="tile tile-wide" style="position: relative; overflow: visible;">
-      <div onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <span class="stat-label">STRATEGIC OPENING</span>
-        <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
-        <span style="font-size:0.7em; color:#94a3b8;">▼</span>
-      </div>
-      <span onclick="event.stopPropagation(); toggleLogicLayers()" style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">ⓘ</span>
-    </div>
-  </div>
+  <div id="strategic-btn" onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <span class="stat-label">STRATEGIC OPENING</span>
+    <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
 
-  <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+  </div>
+      <span onclick="event.stopPropagation(); toggleLogicLayers()" style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;"></span>
+    </div>
+  </div> <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+  
       <div id="layer-logic">
-        <b style="color:var(--gold);">7-DAY STRATEGIC SCAN: METHODOLOGY</b><br>
-        <p style="margin-top: 8px; font-size: 0.9em; line-height: 1.4;">
-          I analyze 168 hours of future physics to find the <b>Strategic Opening</b>. I don't just look for "no snow"—I look for the chemical transition from "tacky" brine to dry dust.
-        </p>
-        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--gold);">
-            <b style="color:var(--gold); font-size: 0.75em;">HOW I CALCULATE THIS:</b>
-            <ul style="padding-left: 18px; margin: 8px 0; font-size: 0.85em; line-height: 1.4;">
-                <li><b>The Exclusion Filter:</b> I skip hours warmer than -2°C or colder than -18°C.</li>
-                <li><b>Curb-Melt Lag:</b> I factor in 12–24 hours of "Lag" after snow events.</li>
-                <li><b>The Confidence Rank:</b> 20km/h wind is ranked 2x higher to skip the <b>"Tacky" Phase</b>.</li>
-            </ul>
+    <b style="color:var(--gold);">7-DAY STRATEGIC SCAN: METHODOLOGY</b><br>
+    <p style="margin-top: 8px; font-size: 0.9em; line-height: 1.4;">
+      I analyze 168 hours of future physics to find the <b>Strategic Opening</b>. I don't just look for "no snow"—I look for the chemical transition from "tacky" brine to dry dust.
+    </p>
+
+    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--gold);">
+        <b style="color:var(--gold); font-size: 0.75em;">HOW I CALCULATE THIS:</b>
+        <ul style="padding-left: 18px; margin: 8px 0; font-size: 0.85em; line-height: 1.4;">
+            <li><b>The Exclusion Filter:</b> I automatically skip any hour warmer than -2°C (Melt) or colder than -18°C (Freeze).</li>
+            <li><b>Curb-Melt Lag:</b> I factor in 12–24 hours of "Lag" after a snow event to ensure plows have finished and residual slush has evaporated.</li>
+            <li><b>The Confidence Rank:</b> A window with 20km/h wind is ranked 2x higher. Air movement is the only way to skip the <b>"Tacky" Phase</b>—a sticky, acidic brine film that creates a "rust-glue" on your paint.</li>
+        </ul>
+    </div>
+
+    <b style="color:var(--gold); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px;">Critical Opening Factors:</b>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#38bdf8; font-size: 0.8em;">WIND SPEED</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">The engine of <b>Sublimation</b>. High wind pulls moisture off the metal before it can react with salt.</span>
         </div>
-        <div onclick="switchLayer('layer-physics')" style="margin-top:15px; color:var(--gold); text-align:center; cursor:pointer; font-weight:800; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03);">
-            🔬 ENTER THE PHYSICS LAB ▼
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#f43f5e; font-size: 0.8em;">ROAD TEMP</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">If the asphalt is above -10°C, salt remains a liquid acid. Below -15°C, salt becomes an inert solid.</span>
         </div>
-      </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#fbbf24; font-size: 0.8em;">DEW POINT</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">I track how "thirsty" the air is. Low dew points ensure your door seals dry before they can flash-freeze.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <b style="color:#10b981; font-size: 0.8em;">SOLAR LOAD</b><br>
+            <span style="font-size: 0.75em; color: #cbd5e1;">Direct sun warms the chassis, allowing your car's soap to penetrate and neutralize salt film.</span>
+        </div>
+    </div>
+
+    <div id="physics-btn" onclick="switchLayer('layer-physics')" style="margin-top:15px; color:var(--gold); text-align:center; cursor:pointer; font-weight:800; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03);">
+     ENTER THE PHYSICS LAB <span id="indicator-physics" class="indicator"></span>
+</div>
+
+</div>
+
 
       <div id="layer-physics" style="display:none;">
-          <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size: 0.65em; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Current Corrosion Kinetics</div>
-            <div style="position: relative; width: 100%; height: 12px; background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #f43f5e 100%); border-radius: 6px; margin: 10px 0;">
-              <div id="corrosion-needle" style="position: absolute; top: -4px; left: 0%; width: 4px; height: 20px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.8); transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
-            </div>
-            <div id="corrosion-desc" style="margin-top: 12px; font-size: 0.85em; font-weight: 700; color: #cbd5e1;">Calculating...</div>
+      <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+  <div style="font-size: 0.65em; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+    Current Corrosion Kinetics
+  </div>
+  
+  <div style="position: relative; width: 100%; height: 12px; background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #f43f5e 100%); border-radius: 6px; margin: 10px 0;">
+    <div id="corrosion-needle" style="position: absolute; top: -4px; left: 0%; width: 4px; height: 20px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.8); transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+  </div>
+  
+  <div style="display: flex; justify-content: space-between; font-size: 0.6em; font-weight: 800; color: #64748b; text-transform: uppercase;">
+    <span>Dormant</span>
+    <span>Active Brine</span>
+    <span>Redline</span>
+  </div>
+  
+  <div id="corrosion-desc" style="margin-top: 12px; font-size: 0.85em; font-weight: 700; color: #cbd5e1;">
+    Calculating reaction rate...
+  </div>
+</div>
+
+          <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+              <b style="color: #f43f5e; text-transform: uppercase;"> THE RUST ACCELERATOR (Brine)</b><br>
+              Road salt is inert when frozen, but between <b>-5°C and +5°C</b>, it transforms into a liquid acid (Brine). It is 10x more corrosive than dry salt.
           </div>
-          <div onclick="switchLayer('layer-logic')" style="color:#94a3b8; text-align:center; cursor:pointer; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">◀ BACK</div>
+          
+          <div style="margin-bottom: 15px;">
+              <b style="color: #10b981; text-transform: uppercase;"> THE HOLY GRAIL (Sublimation)</b><br>
+              True "Freeze-Dry" windows skip the liquid phase via <b>Sublimation</b>. This requires <b>Deep Cold (<-8°C)</b> and <b>High Wind (>18km/h)</b>.
+          </div>
+          
+          <div onclick="switchLayer('layer-logic')" style="color:#94a3b8; text-align:center; cursor:pointer; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+               BACK TO OVERVIEW
+          </div>
       </div>
   </div>
 
-  <div id="salt-drawer" class="drawer">
-      <span id="salt-logic-text">--</span><br><br>
-      <b>Chassis Health:</b> Liquid brine sticks to brake lines and fuel tank straps. Undercarriage rinses are mandatory.
+
+
+<div id="salt-drawer" class="drawer">
+    <span id="salt-logic-text">--</span><br><br>
+    <b>Chassis Health:</b> Modern road de-icers (like Mag-Chloride) are designed to "stick" to surfaces to prevent ice bonding. Unfortunately, this means they also stick to your brake lines, fuel tank straps, and suspension components. 
+    <br><br>
+    <b>Mechanical Care:</b> Even if the body looks clean, salt "dust" accumulates in wheel wells and behind trim. A high-pressure undercarriage rinse is the best way to prevent long-term oxidation on all vehicles.
+</div>
+
+  
+<div id="log-drawer" class="drawer" style="padding: 20px; color: white;">
+  <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">
+    Vehicle Profile
   </div>
 
-  <div id="log-drawer" class="drawer" style="padding: 20px; color: white;">
-    <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">Vehicle Profile</div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <span>Hybrid / EV Owner</span>
-      <input type="checkbox" id="ev-toggle" onchange="saveProfile()">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="font-size:0.9em; font-weight:600;">Hybrid / EV Owner</div>
+      <span class="info-trigger" onclick="event.stopPropagation(); toggleElement('ev-info')">i</span>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <span>Strict Mode</span>
-      <input type="checkbox" id="risk-toggle" onchange="saveProfile()" checked>
-    </div>
-    <div id="log-list" style="margin-bottom:20px; font-size:0.9em; max-height:200px; overflow-y:auto; color:#cbd5e1;">No entries.</div>
-    <button class="btn btn-log" onclick="addNewWash()">+ LOG NEW WASH</button>
+    <input type="checkbox" id="ev-toggle" onchange="saveProfile()" style="width:18px; height:18px; accent-color:#38bdf8; cursor:pointer;">
+  </div>
+  <div id="ev-info" class="info-drawer" style="margin-bottom: 15px;">
+    <b>EV Mode:</b> Tick this if you drive a Hybrid or EV. Enables specialized alerts for battery health and regenerative braking limits in Calgary deep-freezes.
   </div>
 
-  <div id="verdict-drawer" class="drawer">
-    <b>📋 Opening Analysis:</b><br>
-    <span id="verdict-text">--</span><br>
-    <span id="solar-verdict-display" style="display:block; margin-top:8px; color:var(--gold); font-weight:800;"></span>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+    <div style="font-size:0.9em; font-weight:600;">Strict Mode</div>
+    <span class="info-trigger" onclick="event.stopPropagation(); toggleElement('strict-info')">i</span>
+    </div>
+    <input type="checkbox" id="risk-toggle" onchange="saveProfile()" checked style="width:18px; height:18px; accent-color:#fbbf24; cursor:pointer;">
+  </div>
+  <div id="strict-info" class="info-drawer" style="margin-bottom: 15px;">
+<b>Strict Mode:</b> 
+  <br>• <b>ON:</b> Prioritizes a clean car. Only suggests washing when roads are dry enough to prevent immediate "tacky" film.
+  <br>• <b>OFF (Aesthetics Mode):</b> Prioritizes paint health. Suggests washing sooner (down to -11°C) to neutralize salt-crust and stop clear-coat pitting before it deepens.
+</div>
+
+  <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px dashed #475569;">
+    <div style="font-size:0.7em; color:#94a3b8; text-transform:uppercase; font-weight:900;">Brine Exposure Score</div>
+  <div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">
+    <span id="exposure-val" style="font-size:1.4em; font-weight:900; color:#f43f5e;">0</span>
+    <span style="font-size:0.7em; color:#94a3b8;">CORROSIVE DAYS</span>
+  </div>
+  <div id="exposure-status" style="font-size:0.7em; color:#cbd5e1; margin-top:5px;">Chassis is currently stable.</div>
+</div>
+
+<div style="margin-top: 10px; margin-bottom: 5px;">
+  <div style="display: flex; justify-content: space-between; font-size: 0.65em; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">
+    <span>Chassis Salt Load</span>
+    <span id="load-percent">0%</span>
+  </div>
+  
+  <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05);">
+    <div id="salt-load-bar" style="width: 0%; height: 100%; background: linear-gradient(to right, #10b981, #fbbf24, #f43f5e); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+  </div>
+</div>
+
+
+
+  <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; margin-top:25px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">
+    Wash History (Max 5 Entries)
+  </div>
+  <div id="log-list" style="margin-bottom:20px; font-size:0.9em; max-height:200px; overflow-y:auto; color:#cbd5e1;">
+    No entries logged.
+  </div>
+  
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+  <button class="btn btn-log" onclick="addNewWash()" style="width:100%; padding:12px; font-weight:bold; background:#334155; border:none; border-radius:8px; color:white; cursor:pointer;">
+    + LOG NEW
+  </button>
+
+  <button class="btn btn-log" onclick="document.getElementById('manual-date').showPicker()" style="width:100%; padding:12px; font-weight:bold; background:#475569; border:none; border-radius:8px; color:white; cursor:pointer;">
+    + PREVIOUS
+  </button>
+  
+  <input type="date" id="manual-date" onchange="addManualWash(this.value)" style="position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none;">
+</div>
+
+
+</div>
+
+<div id="verdict-drawer" class="drawer">
+  <b> Opening Analysis:</b><br>
+  <span id="verdict-text">--</span><br>
+  <span id="solar-verdict-display" style="display:block; padding-bottom: 8px; margin-top:8px; color:var(--gold); font-weight:800;"></span>
+  
+  <div id="what-if-container" style="margin-top:12px; padding-top:12px; border-top:1px solid #334155;">
+    <b style="color:#94a3b8; font-size:0.9em;"> WHAT IF I WASH NOW?</b><br>
+    <span id="what-if-text" style="font-size:0.95em; color:#cbd5e1;">--</span>
+  </div>
+  <br><b>The "Lag" Rule:</b> Your car's chassis stays frozen much longer than the air. Driving for 15+ minutes before a wash warms the steel.
+</div>
+
+<div class="alerts-area">
+
+<div class="alerts-area">
+  <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">ACTION: LOG A WASH</span><br>
+      <span style="font-size:0.7em;">Calculate cumulative salt load </span>
+      <div id="log-reminder-drawer" class="alert-drawer">
+        Log your last wash in the <b>Vehicle Profile</b> to track your cumulative chassis corrosion risk and current exposure score.
+      </div>
+    </div>
   </div>
 
-  <div class="alerts-area">
-    <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
-      <span>📝</span><div class="b-info"><b>ACTION: LOG A WASH</b></div>
-    </div>
-    <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
-      <span>🌫️</span><div class="b-info"><b>VISIBILITY: HIGH SALT-FILM</b></div>
-    </div>
-    <div id="ice-alert" class="banner indigo" onclick="toggleElement('ice-drawer')">
-      <span>🧊</span><div class="b-info"><b>SAFETY: BLACK ICE RISK</b></div>
-    </div>
-    <div id="plugin-alert" class="banner blue" onclick="toggleElement('plugin-drawer')">
-      <span>🔌</span><div class="b-info"><b>ENGINE: PLUG-IN REQUIRED</b></div>
-    </div>
-    <div id="regen-alert" class="banner indigo" onclick="toggleElement('regen-drawer')">
-      <span>🔋</span><div class="b-info"><b>DRIVING: REGEN LIMITED</b></div>
-    </div>
-    <div id="rust-alert" class="banner amber" onclick="toggleElement('rust-drawer')">
-      <span>🧪</span><div class="b-info"><b>CHASSIS: PEAK CORROSION</b></div>
-    </div>
-    <div id="freeze-alert" class="banner blue" onclick="toggleElement('freeze-drawer')">
-      <span>⏱️</span><div class="b-info"><b id="freeze-val">-- MIN UNTIL FREEZE</b></div>
-    </div>
-    <div id="chip-alert" class="banner orange" onclick="toggleElement('chip-drawer')">
-      <span>💎</span><div class="b-info"><b>DAMAGE: HIGH CHIP RISK</b></div>
+
+  <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">VISIBILITY: HIGH SALT-FILM</span><br>
+      <span style="font-size:0.7em;">Peak Washer Fluid Usage </span>
+      <div id="fluid-drawer" class="alert-drawer">
+        "Dry salt spray" is at its peak. You will likely use 3x more washer fluid today than usual. Ensure your reservoir is topped with -40°C rated fluid.
+      </div>
     </div>
   </div>
 
-  <div id="forecast"></div>
+  <div id="ice-alert" class="banner indigo" onclick="toggleElement('ice-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">SAFETY: BLACK ICE RISK</span><br>
+      <span style="font-size:0.7em;">Invisible Surface Glaze </span>
+      <div id="ice-drawer" class="alert-drawer">
+        Roads may look wet but offer no tire spray. Watch for "invisible" glaze on bridges and shadowed turns. Avoid cruise control.
+      </div>
+    </div>
+  </div>
+
+  <div id="plugin-alert" class="banner blue" onclick="toggleElement('plugin-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">ENGINE: PLUG-IN REQUIRED</span><br>
+      <span style="font-size:0.7em;">Temp below -20°C detected </span>
+      <div id="plugin-drawer" class="alert-drawer">
+        Extreme cold detected. Plug in your block heater for at least 3-4 hours to reduce engine strain and battery drain.
+      </div>
+    </div>
+  </div>
+
+  <div id="regen-alert" class="banner indigo" onclick="toggleElement('regen-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">DRIVING: REGEN LIMITED</span><br>
+      <span style="font-size:0.7em;">Battery too cold for intake </span>
+      <div id="regen-drawer" class="alert-drawer">
+        Your battery management system (BMS) will limit regenerative braking to protect the cells. Expect to use your physical brake pedal more than usual.
+      </div>
+    </div>
+  </div>
+
+  <div id="rust-alert" class="banner amber" onclick="toggleElement('rust-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">CHASSIS: PEAK CORROSION</span><br>
+      <span style="font-size:0.7em;">Salt is chemically active </span>
+      <div id="rust-drawer" class="alert-drawer">
+        At these temperatures, road salt forms a liquid brine that accelerates oxidation. <b>Liquid salt eats steel.</b> An undercarriage rinse is mandatory.
+      </div>
+    </div>
+  </div>
+
+  <div id="freeze-alert" class="banner blue" onclick="toggleElement('freeze-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">MAINTENANCE: DRYING WINDOW</span><br>
+      <span id="freeze-val" style="font-size:0.7em; font-weight:800;">-- MIN UNTIL FREEZE </span>
+      <span class="info-trigger" onclick="event.stopPropagation(); toggleElement('window-info')">i</span>
+      <div id="window-info" class="info-drawer">
+          <b>Drying Window:</b> Your countdown to dry rubber seals before they freeze shut. Wind chill acts as a heat sink that bonds ice to your frame in minutes.
+      </div>
+      <div id="freeze-drawer" class="alert-drawer">
+        Wipe door jambs immediately. Apply silicone spray to weatherstripping to prevent the rubber from bonding to the frame.
+      </div>
+    </div>
+  </div>
+
+  <div id="chip-alert" class="banner orange" onclick="toggleElement('chip-drawer')">
+    <span></span>
+    <div class="b-info">
+      <span style="font-weight:800;">DAMAGE: HIGH CHIP RISK</span><br>
+      <span style="font-size:0.7em;">Pickle Sand in Use </span>
+      <div id="chip-drawer" class="alert-drawer">
+        Calgary uses "Pickle" (97% gravel). Increase following distance to 4+ seconds. Avoid brushes on dry salt-crust to avoid scratching the clear-coat.
+      </div>
+    </div>
+  </div>
+</div>
+
+ <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
+   <div style="text-align: center; font-size: 0.6em; color: #475569; margin-top: 8px; letter-spacing: 0.5px;">
+    FORECAST SHOWS DAILY HIGH / LOW PEAKS
+  <div id="forecast" style="display:flex;gap:10px;margin-top:15px;overflow-x:auto;padding-bottom:5px;"></div>
+</div>
+</a>
 
   <div class="fact-box">
-    <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase;">YYC Insider Insight</div>
+    <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase; margin-bottom:6px; letter-spacing:1px;">YYC Insider Insight</div>
     <div id="random-fact">--</div>
   </div>
 
-  <div class="footer">YYC CAR WASH FORECASTER</div>
+  <div id="sync-footer" class="footer">YYC CAR WASH FORECASTER </div>
 </div>
 
-<script src="app.js?v=13"></script>
+<script src="app.js"></script>
 </body>
 </html>

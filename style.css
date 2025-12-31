@@ -1,28 +1,7 @@
-:root { 
-    --bg: #0f172a; 
-    --card: #ffffff; 
-    --accent: #1e293b; 
-    --blue: #0284c7; 
-    --red: #e11d48; 
-    --gold: #fbbf24; 
-    --green: #059669; 
-    --indigo: #4338ca; 
-}
-
-body { 
-    font-family: -apple-system, system-ui, sans-serif; 
-    margin: 0; 
-    background: var(--bg); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 100vh; 
-    transition: background 0.6s ease; 
-    overscroll-behavior-y: contain; 
-    position: relative;
-}
-
-body::after {
+ :root { --bg: #0f172a; --card: #ffffff; --accent: #1e293b; --blue: #0284c7; --red: #e11d48; --gold: #fbbf24; --green: #059669; --indigo: #4338ca; }
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.6s ease; overscroll-behavior-y: contain; position: relative;}
+     /* This adds the film grain over the whole screen */
+    body::after {
     content: "";
     position: fixed;
     overflow: hidden;
@@ -36,71 +15,168 @@ body::after {
     z-index: 9999; 
 }
 
+@keyframes pulse-gold {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.pulse-text {
+  animation: pulse-gold 2s infinite ease-in-out;
+  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+
+/* Smooth transition for all tiles */
+/* Apply the glow to both standard and wide tiles */
+.tile, .tile-wide {
+    transition: all 0.3s ease;
+    border: 1.5px solid rgba(255,255,255,0.05);
+}
+
+.active-tile {
+    border-color: #fbbf24 !important;
+    background: rgba(251, 191, 36, 0.12) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.2);
+    z-index: 10; /* Ensures the glow isn't cut off by neighbors */
+}
+
+.active-tile .stat-label {
+    color: #fbbf24 !important;
+}
+
+.info-drawer { 
+    display: none; 
+    background: #1e293b; 
+    color: #cbd5e1; 
+    margin: 10px 0; 
+    padding: 15px; 
+    border-radius: 18px; 
+    font-size: 0.82em; 
+    border: 1px dashed #475569; 
+    border-left: 4px solid #fbbf24; /* NEW: Gold strip to show it's "Active Info" */
+    line-height: 1.5;
+}
+
+
+/* Update your existing banner slightly */
+.banner { 
+    display: none; 
+    align-items: center; 
+    gap: 12px; 
+    padding: 14px 18px; 
+    border-radius: 22px; 
+    margin: 0 20px 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease; /* Add this for smooth glowing */
+    border: 1.5px solid transparent; /* Placeholder for the gold border */
+}
+
+/* The Glow for Banners */
+.banner.active-tile {
+    border-color: #fbbf24 !important;
+    background-color: rgba(251, 191, 36, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.25);
+    transform: scale(1.01);
+}
+
+#forecast { 
+    display: flex; 
+    justify-content: space-between; 
+    margin: 0 20px 20px; 
+    background: #f8fafc; /* Your current light background */
+    padding: 15px 10px; 
+    border-radius: 28px; 
+    border: 1px solid #e2e8f0; /* Slightly darker border for definition */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+
 #card { 
     background: var(--card); 
     width: 92%; 
     position: relative;
     max-width: 400px; 
     border-radius: 40px; 
-    touch-action: pan-y; 
+    
+    /* THE FIX: Constraints the card so it stays on screen */
+    max-height: 88vh; /* 88% of the viewport height */
     overflow-y: auto; 
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    
+    /* Smooth momentum scrolling for iOS/Android */
+    -webkit-overflow-scrolling: touch; 
+    touch-action: pan-y; 
+    
     display: none; 
+    margin: 20px auto; /* Centers the card and gives it "breathing room" */
     box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+    
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
     will-change: transform;
 }
+    
+    /* REFINEMENT: Smooth movement and "rubber-band" snap back */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    will-change: transform; /* Optimizes performance for mobile processors */
+}
 
+/* REFINEMENT: Visual look when the sync is happening */
 .syncing {
     opacity: 0.6;
     transform: scale(0.96) !important;
 }
+    
+    .final-verdict-ribbon { padding: 12px; text-align: center; font-weight: 900; font-size: 0.85em; letter-spacing: 2px; text-transform: uppercase; color: white; }
+    .v-yes { background: var(--green); }
+    .v-no { background: var(--blue); }
+    .v-wait { background: #475569; }
+    .v-slush { background: #92400e; }
 
-.final-verdict-ribbon { padding: 12px; text-align: center; font-weight: 900; font-size: 0.85em; letter-spacing: 2px; text-transform: uppercase; color: white; }
-.v-yes { background: var(--green); }
-.v-no { background: var(--blue); }
-.v-wait { background: #475569; }
-.v-slush { background: #92400e; }
+    .header { padding: 30px 20px 15px; text-align: center; }
+    .badge { font-size: 2.8em; font-weight: 900; margin: 5px 0; letter-spacing: -1.5px; }
+    .cur-temp-sub { font-size: 1.1em; font-weight: 800; color: #64748b; margin-bottom: 8px; }
+    .judgement-call-text { font-size: 0.85em; font-weight: 600; line-height: 1.4; color: #475569; padding: 0 10px; }
+    .maintenance-nag { color: var(--red); font-weight: 800; display: block; margin-top: 5px; text-transform: uppercase; font-size: 0.75em; }
 
-.header { padding: 30px 20px 15px; text-align: center; }
-.badge { font-size: 2.8em; font-weight: 900; margin: 5px 0; letter-spacing: -1.5px; }
-.cur-temp-sub { font-size: 1.1em; font-weight: 800; color: #64748b; margin-bottom: 8px; }
-.judgement-call-text { font-size: 0.85em; font-weight: 600; line-height: 1.4; color: #475569; padding: 0 10px; }
-.maintenance-nag { color: var(--red); font-weight: 800; display: block; margin-top: 5px; text-transform: uppercase; font-size: 0.75em; }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 15px; }
+    .tile { background: #f1f5f9; padding: 15px; border-radius: 26px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.1s; }
+    .tile:active { transform: scale(0.96); }
+    .stat-label { font-size: 0.65em; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px; }
+    .stat-val { font-size: 0.95em; font-weight: 700; color: #0f172a; }
+    .tile-wide { grid-column: span 2; background: #fffbeb; border-color: #fde68a; }
 
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 15px; }
-.tile { background: #f1f5f9; padding: 15px; border-radius: 26px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.1s; }
-.tile:active { transform: scale(0.96); }
-.stat-label { font-size: 0.65em; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px; }
-.stat-val { font-size: 0.95em; font-weight: 700; color: #0f172a; }
-.tile-wide { grid-column: span 2; background: #fffbeb; border-color: #fde68a; }
+    .drawer { display: none; background: #0f172a; color: #f1f5f9; margin: 0 20px 15px; padding: 22px; border-radius: 26px; font-size: 0.85em; line-height: 1.6; border: 1px solid #334155; text-align: left; }
+    .drawer b { color: var(--gold); }
 
-.drawer { display: none; background: #0f172a; color: #f1f5f9; margin: 0 20px 15px; padding: 22px; border-radius: 26px; font-size: 0.85em; line-height: 1.6; border: 1px solid #334155; text-align: left; }
-.drawer b { color: var(--gold); }
+    .alerts-area { padding: 0 20px 15px; text-align: left; }
+    .b-info { flex-grow: 1; text-align: left; }
+    .btn-action-label { font-size: 0.62em; background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 4px; margin-top: 2px; display: inline-block; font-weight: bold; }
+    .alert-drawer { display: none; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 8px; font-size: 0.85em; line-height: 1.5; }
 
-.alerts-area { padding: 0 20px 15px; text-align: left; }
-.banner { border-radius: 22px; padding: 14px 18px; margin-bottom: 8px; display: none; align-items: center; gap: 12px; cursor: pointer; position: relative; }
-.b-info { flex-grow: 1; text-align: left; }
-.btn-action-label { font-size: 0.62em; background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 4px; margin-top: 2px; display: inline-block; font-weight: bold; }
-.alert-drawer { display: none; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 8px; font-size: 0.85em; line-height: 1.5; }
+    .blue { background: #e0f2fe; color: #0369a1; }
+    .orange { background: #fef3c7; color: #b45309; }
+    .indigo { background: #e0e7ff; color: #4338ca; }
 
-.blue { background: #e0f2fe; color: #0369a1; }
-.orange { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-.amber { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-.indigo { background: #e0e7ff; color: #4338ca; }
+    .info-trigger { background: #334155; color: white; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7em; cursor: pointer; margin-left: 4px; font-weight: bold; position: relative; top: -1px; }
 
-.info-trigger { background: #334155; color: white; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7em; cursor: pointer; margin-left: 4px; font-weight: bold; position: relative; top: -1px; }
-.info-drawer { display: none; background: #1e293b; color: #cbd5e1; margin: 10px 0; padding: 15px; border-radius: 18px; font-size: 0.82em; border: 1px dashed #475569; }
 
-#forecast { display: flex; margin: 0 20px 20px; background: #f8fafc; padding: 12px; border-radius: 28px; border: 1px solid #f1f5f9; }
-.fact-box { margin: 0 20px 20px; padding: 18px; background: #f1f5f9; border-radius: 24px; border-left: 5px solid var(--gold); font-size: 0.82em; line-height: 1.4; color: #1e293b; text-align: left; }
+    .fact-box { margin: 0 20px 20px; padding: 18px; background: #f1f5f9; border-radius: 24px; border-left: 5px solid var(--gold); font-size: 0.82em; line-height: 1.4; color: #1e293b; text-align: left; }
 
-.action-container { padding: 0 20px 30px; display: flex; justify-content: center; }
-.btn { border: none; font-weight: 800; cursor: pointer; border-radius: 26px; text-align: center; transition: all 0.2s; }
-.btn-refresh { background: #1e293b; color: white; width: 100%; padding: 22px; font-size: 1.1em; box-shadow: 0 10px 25px rgba(30, 41, 59, 0.2); }
-.btn-log { background: #334155; color: #f1f5f9; width: auto; min-width: 140px; margin: 15px auto 0; padding: 10px 20px; font-size: 0.8em; display: block; }
-
-.footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-
-#ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; }
-.ios-icon { width: 20px; vertical-align: middle; }
+    .action-container { padding: 0 20px 30px; display: flex; justify-content: center; }
+    .btn { border: none; font-weight: 800; cursor: pointer; border-radius: 26px; text-align: center; transition: all 0.2s; }
+    .btn-refresh { background: #1e293b; color: white; width: 100%; padding: 22px; font-size: 1.1em; box-shadow: 0 10px 25px rgba(30, 41, 59, 0.2); }
+    .btn-log { background: #334155; color: #f1f5f9; width: auto; min-width: 140px; margin: 15px auto 0; padding: 10px 20px; font-size: 0.8em; display: block; }
+    
+    .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+    
+    #ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; } .ios-icon { width: 20px; vertical-align: middle; }
+    #weather-link:active { transform: scale(0.97); opacity: 0.8; transition: transform 0.1s; } #weather-link { -webkit-tap-highlight-color: transparent; touch-action: manipulation; position: relative; }
+    
+     overscroll-behavior-y: contain;
+     
+     .orange { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; } /* CHIP RISK (Clay) */
+     .amber { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }  /* RUST RISK (Chemical) */

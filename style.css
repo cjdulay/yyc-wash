@@ -180,3 +180,10 @@
      
      .orange { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; } /* CHIP RISK (Clay) */
      .amber { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }  /* RUST RISK (Chemical) */
+
+#reset-link-container button:active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: scale(0.95);
+}

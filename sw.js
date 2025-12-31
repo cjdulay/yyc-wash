@@ -1,5 +1,12 @@
 const CACHE_NAME = 'yyc-wash-v10'; // Increment this every time you push
-const ASSETS = ['./', './index.html', './manifest.json'];
+const ASSETS = [
+  './', 
+  './index.html', 
+  './style.css', 
+  './app.js', 
+  './manifest.json',
+  './logo.png'
+];
 
 self.addEventListener('install', (event) => {
   // FORCE THE UPDATE: Skip the waiting phase

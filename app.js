@@ -565,19 +565,17 @@ function openWeatherApp() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     if (isIOS) {
-        // Apple Weather App Protocol
         window.location.href = "weather://";
-        
-        // Fallback for iOS
         setTimeout(() => {
             if (!document.hidden) {
                 window.open("https://weather.apple.com", "_blank");
             }
         }, 800);
     } else {
-        // Android & Others: Direct Google Weather Card trigger
-        // This opens the search results which Android handles by sliding up the native weather UI
-        window.open("https://www.google.com/search?q=calgary+weather", "_blank");
+        // Android: This specific URL structure usually bypasses the Play Store redirect
+        const url = "https://www.google.com/search?q=calgary+weather&btnI=1"; 
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        if (newWindow) newWindow.opener = null;
     }
 
 }

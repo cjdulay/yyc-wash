@@ -8,7 +8,6 @@
   <link rel="apple-touch-icon" href="logo.png">
   <title>YYC CAR WASH FORECASTER</title>
    <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -70,15 +69,17 @@
     </div>
     
 <div class="tile tile-wide" style="position: relative; overflow: visible;">
-  <div id="strategic-btn" onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <span class="stat-label">STRATEGIC OPENING</span>
-    <span id="next-val" class="stat-val" style="font-size:0.85em;">--</span> 
-  </div>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 8px;">
+        <span class="stat-label" style="margin-bottom: 0;">STRATEGIC OPENING</span>
+        <span onclick="event.stopPropagation(); toggleLogicLayers()" 
+              style="cursor: pointer; color: #38bdf8; font-size: 1.1rem; line-height: 1; padding: 4px; -webkit-tap-highlight-color: transparent;">
+            &#9432;
+        </span>
+    </div>
 
-  <span onclick="event.stopPropagation(); toggleLogicLayers()" 
-        style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">
-    
-  </span>
+    <div id="strategic-btn" onclick="toggleElement('verdict-drawer')" style="width: 100%; cursor: pointer;">
+        <span id="next-val" class="stat-val" style="font-size: 0.85rem;">--</span>
+    </div>
 </div>
 
   </div> <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
@@ -246,12 +247,12 @@
 </div>
 
 <div id="verdict-drawer" class="drawer">
-  <b> Opening Analysis:</b><br>
+  <b>&#x1F4CB; Opening Analysis:</b><br>
   <span id="verdict-text">--</span><br>
   <span id="solar-verdict-display" style="display:block; padding-bottom: 8px; margin-top:8px; color:var(--gold); font-weight:800;"></span>
   
   <div id="what-if-container" style="margin-top:12px; padding-top:12px; border-top:1px solid #334155;">
-    <b style="color:#94a3b8; font-size:0.9em;"> WHAT IF I WASH NOW?</b><br>
+    <b style="color:#94a3b8; font-size:0.9em;">&#129300; WHAT IF I WASH NOW?</b><br>
     <span id="what-if-text" style="font-size:0.95em; color:#cbd5e1;">--</span>
   </div>
   <br><b>The "Lag" Rule:</b> Your car's chassis stays frozen much longer than the air. Driving for 15+ minutes before a wash warms the steel.
@@ -263,7 +264,7 @@
   <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">ACTION: LOG A WASH</span><br>
+      <span style="font-weight:800;">&#x1fab5; ACTION: LOG A WASH</span><br>
       <span style="font-size:0.7em;">Calculate cumulative salt load </span>
       <div id="log-reminder-drawer" class="alert-drawer">
         Log your last wash in the <b>Vehicle Profile</b> to track your cumulative chassis corrosion risk and current exposure score.
@@ -275,7 +276,7 @@
   <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">VISIBILITY: HIGH SALT-FILM</span><br>
+      <span style="font-weight:800;">&#9888;&#65039; VISIBILITY: HIGH SALT-FILM</span><br>
       <span style="font-size:0.7em;">Peak Washer Fluid Usage </span>
       <div id="fluid-drawer" class="alert-drawer">
         "Dry salt spray" is at its peak. You will likely use 3x more washer fluid today than usual. Ensure your reservoir is topped with -40°C rated fluid.
@@ -286,7 +287,7 @@
   <div id="ice-alert" class="banner indigo" onclick="toggleElement('ice-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">SAFETY: BLACK ICE RISK</span><br>
+      <span style="font-weight:800;">&#9888;&#65039; SAFETY: BLACK ICE RISK</span><br>
       <span style="font-size:0.7em;">Invisible Surface Glaze </span>
       <div id="ice-drawer" class="alert-drawer">
         Roads may look wet but offer no tire spray. Watch for "invisible" glaze on bridges and shadowed turns. Avoid cruise control.
@@ -297,7 +298,7 @@
   <div id="plugin-alert" class="banner blue" onclick="toggleElement('plugin-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">ENGINE: PLUG-IN REQUIRED</span><br>
+      <span style="font-weight:800;">&#128268; ENGINE: PLUG-IN REQUIRED</span><br>
       <span style="font-size:0.7em;">Temp below -20°C detected </span>
       <div id="plugin-drawer" class="alert-drawer">
         Extreme cold detected. Plug in your block heater for at least 3-4 hours to reduce engine strain and battery drain.
@@ -308,7 +309,7 @@
   <div id="regen-alert" class="banner indigo" onclick="toggleElement('regen-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">DRIVING: REGEN LIMITED</span><br>
+      <span style="font-weight:800;">&#128267; DRIVING: REGEN LIMITED</span><br>
       <span style="font-size:0.7em;">Battery too cold for intake </span>
       <div id="regen-drawer" class="alert-drawer">
         Your battery management system (BMS) will limit regenerative braking to protect the cells. Expect to use your physical brake pedal more than usual.
@@ -319,7 +320,7 @@
   <div id="rust-alert" class="banner amber" onclick="toggleElement('rust-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">CHASSIS: PEAK CORROSION</span><br>
+      <span style="font-weight:800;">&#9763;&#65039; CHASSIS: PEAK CORROSION</span><br>
       <span style="font-size:0.7em;">Salt is chemically active </span>
       <div id="rust-drawer" class="alert-drawer">
         At these temperatures, road salt forms a liquid brine that accelerates oxidation. <b>Liquid salt eats steel.</b> An undercarriage rinse is mandatory.
@@ -330,7 +331,7 @@
   <div id="freeze-alert" class="banner blue" onclick="toggleElement('freeze-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">MAINTENANCE: DRYING WINDOW</span><br>
+      <span style="font-weight:800;">&#127788;&#65039; MAINTENANCE: DRYING WINDOW</span><br>
       <span id="freeze-val" style="font-size:0.7em; font-weight:800;">-- MIN UNTIL FREEZE </span>
       <span class="info-trigger" onclick="event.stopPropagation(); toggleElement('window-info')">i</span>
       <div id="window-info" class="info-drawer">
@@ -345,7 +346,7 @@
   <div id="chip-alert" class="banner orange" onclick="toggleElement('chip-drawer')">
     <span></span>
     <div class="b-info">
-      <span style="font-weight:800;">DAMAGE: HIGH CHIP RISK</span><br>
+      <span style="font-weight:800;">&#129704; DAMAGE: HIGH CHIP RISK</span><br>
       <span style="font-size:0.7em;">Pickle Sand in Use </span>
       <div id="chip-drawer" class="alert-drawer">
         Calgary uses "Pickle" (97% gravel). Increase following distance to 4+ seconds. Avoid brushes on dry salt-crust to avoid scratching the clear-coat.
@@ -360,7 +361,7 @@
         Forecast shows daily high / low peaks
     </div>
     <div onclick="openWeatherApp()" style="font-size: 0.65rem; color: #38bdf8; font-weight: 800; cursor: pointer; display: inline-block; margin-top: 4px;">
-        OPEN WEATHER APP ↗
+        OPEN WEATHER APP 
     </div>
 
 <div id="forecast" onclick="openWeatherApp()" style="display: flex; justify-content: space-between; padding: 20px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;">

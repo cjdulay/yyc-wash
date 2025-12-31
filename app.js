@@ -562,28 +562,30 @@ function resetOnboarding() {
 }
 
 function openWeatherApp(e) {
-    if (e) e.preventDefault();
-    const ua = navigator.userAgent.toLowerCase();
-    
-    // Calgary coordinates for precise local loading
-    const lat = 51.0447;
-    const lon = -114.0719;
-    const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
+  // 1. Prevent the page from jumping/reloading
+  if (e) e.preventDefault();
+  
+  const ua = navigator.userAgent.toLowerCase();
 
-    if (ua.includes("iphone") || ua.includes("ipad")) {
-        // iOS: Open native Apple Weather via Universal Link
-        window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
-    } 
-    else if (ua.includes("android")) {
-        // Android: This specific Intent targets the internal Google Weather Activity
-        const googleWeatherIntent = 
-            "intent:#Intent;action=android.intent.action.VIEW;component=com.google.android.googlequicksearchbox/com.google.android.apps.search.weather.WeatherExportedActivity;S.browser_fallback_url=" + 
-            encodeURIComponent(fallback) + ";end;";
-        
-        window.location.href = googleWeatherIntent;
-    } 
-    else {
-        // Desktop Fallback
-        window.open(fallback, "_blank");
-    }
+  // 2. Calgary coordinates and fallback from your working version
+  const lat = 51.0447;
+  const lon = -114.0719;
+  const fallback = `https://weather.com/weather/today/l/${lat},${lon}`;
+
+  if (ua.includes("iphone") || ua.includes("ipad")) {
+    // iOS: The Universal Link that triggers the native Apple Weather app
+    window.location.href = `https://weather.apple.com/?lat=${lat}&lon=${lon}`;
+  } 
+  else if (ua.includes("android")) {
+    // ANDROID FIX: Using ONLY the specific Activity intent found in your logs.
+    // This targets the internal Google Weather card directly.
+    const googleWeatherIntent = "intent:#Intent;action=android.intent.action.VIEW;component=com.google.android.googlequicksearchbox/com.google.android.apps.search.weather.WeatherExportedActivity;S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end;";
+
+    window.location.href = googleWeatherIntent;
+  } 
+  else {
+    // Desktop Fallback
+    window.open(fallback, "_blank");
+  
+  }
 }

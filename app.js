@@ -575,7 +575,7 @@ function openWeatherApp(e) {
   else {
     // ANDROID & DESKTOP: Direct Google Search for the Calgary weather card.
     // This bypasses the "Open with" menu and Play Store redirects.
-    const searchUrl = `https://www.google.com/search?q=weather+${lat},${lon}`;
+    const searchUrl = `https://www.google.com/search?q=calgary+weather`;
     window.open(searchUrl, "_blank");
   }
 

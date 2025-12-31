@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yyc-wash-v9'; // Increment this every time you push
+const CACHE_NAME = 'yyc-wash-v10'; // Increment this every time you push
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {

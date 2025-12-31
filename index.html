@@ -3,106 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <title>YYC CAR WASH FORECASTER</title>
-  <style>
-    :root { --bg: #0f172a; --card: #ffffff; --accent: #1e293b; --blue: #0284c7; --red: #e11d48; --gold: #fbbf24; --green: #059669; --indigo: #4338ca; }
-    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.6s ease; overscroll-behavior-y: contain; position: relative;}
-     /* This adds the film grain over the whole screen */
-    body::after {
-    content: "";
-    position: fixed;
-    overflow: hidden;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.06; 
-    pointer-events: none; 
-    z-index: 9999; 
-}
-
-    #card { 
-    background: var(--card); 
-    width: 92%; 
-    position: relative;
-    max-width: 400px; 
-    border-radius: 40px; 
-    touch-action: none;
-    overflow: hidden; 
-    display: none; 
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
-    
-    
-    /* REFINEMENT: Smooth movement and "rubber-band" snap back */
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-    will-change: transform; /* Optimizes performance for mobile processors */
-}
-
-/* REFINEMENT: Visual look when the sync is happening */
-.syncing {
-    opacity: 0.6;
-    transform: scale(0.96) !important;
-}
-    
-    .final-verdict-ribbon { padding: 12px; text-align: center; font-weight: 900; font-size: 0.85em; letter-spacing: 2px; text-transform: uppercase; color: white; }
-    .v-yes { background: var(--green); }
-    .v-no { background: var(--blue); }
-    .v-wait { background: #475569; }
-    .v-slush { background: #92400e; }
-
-    .header { padding: 30px 20px 15px; text-align: center; }
-    .badge { font-size: 2.8em; font-weight: 900; margin: 5px 0; letter-spacing: -1.5px; }
-    .cur-temp-sub { font-size: 1.1em; font-weight: 800; color: #64748b; margin-bottom: 8px; }
-    .judgement-call-text { font-size: 0.85em; font-weight: 600; line-height: 1.4; color: #475569; padding: 0 10px; }
-    .maintenance-nag { color: var(--red); font-weight: 800; display: block; margin-top: 5px; text-transform: uppercase; font-size: 0.75em; }
-
-    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 15px; }
-    .tile { background: #f1f5f9; padding: 15px; border-radius: 26px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.1s; }
-    .tile:active { transform: scale(0.96); }
-    .stat-label { font-size: 0.65em; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px; }
-    .stat-val { font-size: 0.95em; font-weight: 700; color: #0f172a; }
-    .tile-wide { grid-column: span 2; background: #fffbeb; border-color: #fde68a; }
-
-    .drawer { display: none; background: #0f172a; color: #f1f5f9; margin: 0 20px 15px; padding: 22px; border-radius: 26px; font-size: 0.85em; line-height: 1.6; border: 1px solid #334155; text-align: left; }
-    .drawer b { color: var(--gold); }
-
-    .alerts-area { padding: 0 20px 15px; text-align: left; }
-    .banner { border-radius: 22px; padding: 14px 18px; margin-bottom: 8px; display: none; align-items: center; gap: 12px; cursor: pointer; position: relative; }
-    .b-info { flex-grow: 1; text-align: left; }
-    .btn-action-label { font-size: 0.62em; background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 4px; margin-top: 2px; display: inline-block; font-weight: bold; }
-    .alert-drawer { display: none; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 8px; font-size: 0.85em; line-height: 1.5; }
-
-    .blue { background: #e0f2fe; color: #0369a1; }
-    .orange { background: #fef3c7; color: #b45309; }
-    .indigo { background: #e0e7ff; color: #4338ca; }
-
-    .info-trigger { background: #334155; color: white; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7em; cursor: pointer; margin-left: 4px; font-weight: bold; position: relative; top: -1px; }
-    .info-drawer { display: none; background: #1e293b; color: #cbd5e1; margin: 10px 0; padding: 15px; border-radius: 18px; font-size: 0.82em; border: 1px dashed #475569; }
-
-    #forecast { display: flex; margin: 0 20px 20px; background: #f8fafc; padding: 12px; border-radius: 28px; border: 1px solid #f1f5f9; }
-    .fact-box { margin: 0 20px 20px; padding: 18px; background: #f1f5f9; border-radius: 24px; border-left: 5px solid var(--gold); font-size: 0.82em; line-height: 1.4; color: #1e293b; text-align: left; }
-
-    .action-container { padding: 0 20px 30px; display: flex; justify-content: center; }
-    .btn { border: none; font-weight: 800; cursor: pointer; border-radius: 26px; text-align: center; transition: all 0.2s; }
-    .btn-refresh { background: #1e293b; color: white; width: 100%; padding: 22px; font-size: 1.1em; box-shadow: 0 10px 25px rgba(30, 41, 59, 0.2); }
-    .btn-log { background: #334155; color: #f1f5f9; width: auto; min-width: 140px; margin: 15px auto 0; padding: 10px 20px; font-size: 0.8em; display: block; }
-    
-    .footer { font-size: 0.7em; color: #94a3b8; padding-bottom: 25px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-    
-    #ios-prompt { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; z-index: 9999; border: 1px solid #ddd; } .ios-icon { width: 20px; vertical-align: middle; }
-    #weather-link:active { transform: scale(0.97); opacity: 0.8; transition: transform 0.1s; } #weather-link { -webkit-tap-highlight-color: transparent; touch-action: manipulation; position: relative; }
-    
-     overscroll-behavior-y: contain;
-     
-     .orange { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; } /* CHIP RISK (Clay) */
-     .amber { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }  /* RUST RISK (Chemical) */
-     .banner { display: none; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 22px; margin: 0 20px 8px; cursor: pointer; }
-
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -118,15 +23,13 @@
     <div id="sync-tag" style="font-size: 0.6em; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">
         YYC SENSOR • SYNCING...
     </div>
-    
     <div id="status-badge" class="badge">--</div>
     <div id="cur-temp-display" class="cur-temp-sub">--&deg;C Currently</div>
     <div id="judgement-call" class="judgement-call-text">--</div>
     <div id="maintenance-nag" class="maintenance-nag" style="display:none;">⚠️ WASH OVERDUE: 7+ DAYS</div>
   </div>
-  
 
-    <div class="dashboard-grid">
+  <div class="dashboard-grid">
     <div class="tile" onclick="toggleElement('salt-drawer')">
       <span class="stat-label">ROAD CHEMISTRY</span>
       <span id="salt-val" class="stat-val">--</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
@@ -135,7 +38,6 @@
       <span class="stat-label">VEHICLE PROFILE</span>
       <span id="last-date" class="stat-val">None</span> <span style="font-size:0.7em; color:#94a3b8;">▼</span>
     </div>
-    
     <div class="tile tile-wide" style="position: relative; overflow: visible;">
       <div onclick="toggleElement('verdict-drawer')" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <span class="stat-label">STRATEGIC OPENING</span>
@@ -144,560 +46,101 @@
       </div>
       <span onclick="event.stopPropagation(); toggleLogicLayers()" style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">ⓘ</span>
     </div>
-  </div> <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
-  
+  </div>
+
+  <div id="logic-info" style="display:none; margin: -5px 20px 15px; padding: 18px; font-size: 0.75em; text-align: left; background: #1e293b; border: 1px solid #334155; border-radius: 22px; line-height: 1.6; color: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
       <div id="layer-logic">
-    <b style="color:var(--gold);">7-DAY STRATEGIC SCAN: METHODOLOGY</b><br>
-    <p style="margin-top: 8px; font-size: 0.9em; line-height: 1.4;">
-      I analyze 168 hours of future physics to find the <b>Strategic Opening</b>. I don't just look for "no snow"—I look for the chemical transition from "tacky" brine to dry dust.
-    </p>
-
-    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--gold);">
-        <b style="color:var(--gold); font-size: 0.75em;">HOW I CALCULATE THIS:</b>
-        <ul style="padding-left: 18px; margin: 8px 0; font-size: 0.85em; line-height: 1.4;">
-            <li><b>The Exclusion Filter:</b> I automatically skip any hour warmer than -2°C (Melt) or colder than -18°C (Freeze).</li>
-            <li><b>Curb-Melt Lag:</b> I factor in 12–24 hours of "Lag" after a snow event to ensure plows have finished and residual slush has evaporated.</li>
-            <li><b>The Confidence Rank:</b> A window with 20km/h wind is ranked 2x higher. Air movement is the only way to skip the <b>"Tacky" Phase</b>—a sticky, acidic brine film that creates a "rust-glue" on your paint.</li>
-        </ul>
-    </div>
-
-    <b style="color:var(--gold); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px;">Critical Opening Factors:</b>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-            <b style="color:#38bdf8; font-size: 0.8em;">WIND SPEED</b><br>
-            <span style="font-size: 0.75em; color: #cbd5e1;">The engine of <b>Sublimation</b>. High wind pulls moisture off the metal before it can react with salt.</span>
+        <b style="color:var(--gold);">7-DAY STRATEGIC SCAN: METHODOLOGY</b><br>
+        <p style="margin-top: 8px; font-size: 0.9em; line-height: 1.4;">
+          I analyze 168 hours of future physics to find the <b>Strategic Opening</b>. I don't just look for "no snow"—I look for the chemical transition from "tacky" brine to dry dust.
+        </p>
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--gold);">
+            <b style="color:var(--gold); font-size: 0.75em;">HOW I CALCULATE THIS:</b>
+            <ul style="padding-left: 18px; margin: 8px 0; font-size: 0.85em; line-height: 1.4;">
+                <li><b>The Exclusion Filter:</b> I skip hours warmer than -2°C or colder than -18°C.</li>
+                <li><b>Curb-Melt Lag:</b> I factor in 12–24 hours of "Lag" after snow events.</li>
+                <li><b>The Confidence Rank:</b> 20km/h wind is ranked 2x higher to skip the <b>"Tacky" Phase</b>.</li>
+            </ul>
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-            <b style="color:#f43f5e; font-size: 0.8em;">ROAD TEMP</b><br>
-            <span style="font-size: 0.75em; color: #cbd5e1;">If the asphalt is above -10°C, salt remains a liquid acid. Below -15°C, salt becomes an inert solid.</span>
+        <div onclick="switchLayer('layer-physics')" style="margin-top:15px; color:var(--gold); text-align:center; cursor:pointer; font-weight:800; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03);">
+            🔬 ENTER THE PHYSICS LAB ▼
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-            <b style="color:#fbbf24; font-size: 0.8em;">DEW POINT</b><br>
-            <span style="font-size: 0.75em; color: #cbd5e1;">I track how "thirsty" the air is. Low dew points ensure your door seals dry before they can flash-freeze.</span>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-            <b style="color:#10b981; font-size: 0.8em;">SOLAR LOAD</b><br>
-            <span style="font-size: 0.75em; color: #cbd5e1;">Direct sun warms the chassis, allowing your car's soap to penetrate and neutralize salt film.</span>
-        </div>
-    </div>
-
-    <div onclick="switchLayer('layer-physics')" style="margin-top:15px; color:var(--gold); text-align:center; cursor:pointer; font-weight:800; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03);">
-        🔬 ENTER THE PHYSICS LAB ▼
-    </div>
-</div>
-
-
+      </div>
 
       <div id="layer-physics" style="display:none;">
-      <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-  <div style="font-size: 0.65em; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
-    Current Corrosion Kinetics
-  </div>
-  
-  <div style="position: relative; width: 100%; height: 12px; background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #f43f5e 100%); border-radius: 6px; margin: 10px 0;">
-    <div id="corrosion-needle" style="position: absolute; top: -4px; left: 0%; width: 4px; height: 20px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.8); transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
-  </div>
-  
-  <div style="display: flex; justify-content: space-between; font-size: 0.6em; font-weight: 800; color: #64748b; text-transform: uppercase;">
-    <span>Dormant</span>
-    <span>Active Brine</span>
-    <span>Redline</span>
-  </div>
-  
-  <div id="corrosion-desc" style="margin-top: 12px; font-size: 0.85em; font-weight: 700; color: #cbd5e1;">
-    Calculating reaction rate...
-  </div>
-</div>
-
-          <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <b style="color: #f43f5e; text-transform: uppercase;">⚠️ THE RUST ACCELERATOR (Brine)</b><br>
-              Road salt is inert when frozen, but between <b>-5°C and +5°C</b>, it transforms into a liquid acid (Brine). It is 10x more corrosive than dry salt.
+          <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="font-size: 0.65em; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Current Corrosion Kinetics</div>
+            <div style="position: relative; width: 100%; height: 12px; background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #f43f5e 100%); border-radius: 6px; margin: 10px 0;">
+              <div id="corrosion-needle" style="position: absolute; top: -4px; left: 0%; width: 4px; height: 20px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.8); transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+            </div>
+            <div id="corrosion-desc" style="margin-top: 12px; font-size: 0.85em; font-weight: 700; color: #cbd5e1;">Calculating...</div>
           </div>
-          
-          <div style="margin-bottom: 15px;">
-              <b style="color: #10b981; text-transform: uppercase;">🛡️ THE HOLY GRAIL (Sublimation)</b><br>
-              True "Freeze-Dry" windows skip the liquid phase via <b>Sublimation</b>. This requires <b>Deep Cold (<-8°C)</b> and <b>High Wind (>18km/h)</b>.
-          </div>
-          
-          <div onclick="switchLayer('layer-logic')" style="color:#94a3b8; text-align:center; cursor:pointer; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-              ◀ BACK TO OVERVIEW
-          </div>
+          <div onclick="switchLayer('layer-logic')" style="color:#94a3b8; text-align:center; cursor:pointer; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">◀ BACK</div>
       </div>
   </div>
 
-
-
-<div id="salt-drawer" class="drawer">
-    <span id="salt-logic-text">--</span><br><br>
-    <b>Chassis Health:</b> Modern road de-icers (like Mag-Chloride) are designed to "stick" to surfaces to prevent ice bonding. Unfortunately, this means they also stick to your brake lines, fuel tank straps, and suspension components. 
-    <br><br>
-    <b>Mechanical Care:</b> Even if the body looks clean, salt "dust" accumulates in wheel wells and behind trim. A high-pressure undercarriage rinse is the best way to prevent long-term oxidation on all vehicles.
-</div>
-
-  
-<div id="log-drawer" class="drawer" style="padding: 20px; color: white;">
-  <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">
-    Vehicle Profile
+  <div id="salt-drawer" class="drawer">
+      <span id="salt-logic-text">--</span><br><br>
+      <b>Chassis Health:</b> Liquid brine sticks to brake lines and fuel tank straps. Undercarriage rinses are mandatory.
   </div>
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div style="font-size:0.9em; font-weight:600;">Hybrid / EV Owner</div>
-      <span class="info-trigger" onclick="toggleElement('ev-info')">i</span>
+  <div id="log-drawer" class="drawer" style="padding: 20px; color: white;">
+    <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">Vehicle Profile</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span>Hybrid / EV Owner</span>
+      <input type="checkbox" id="ev-toggle" onchange="saveProfile()">
     </div>
-    <input type="checkbox" id="ev-toggle" onchange="saveProfile()" style="width:18px; height:18px; accent-color:#38bdf8; cursor:pointer;">
-  </div>
-  <div id="ev-info" class="info-drawer" style="margin-bottom: 15px;">
-    <b>EV Mode:</b> Tick this if you drive a Hybrid or EV. Enables specialized alerts for battery health and regenerative braking limits in Calgary deep-freezes.
-  </div>
-
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div style="font-size:0.9em; font-weight:600;">Strict Mode</div>
-      <span class="info-trigger" onclick="toggleElement('strict-info')">i</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <span>Strict Mode</span>
+      <input type="checkbox" id="risk-toggle" onchange="saveProfile()" checked>
     </div>
-    <input type="checkbox" id="risk-toggle" onchange="saveProfile()" checked style="width:18px; height:18px; accent-color:#fbbf24; cursor:pointer;">
-  </div>
-  <div id="strict-info" class="info-drawer" style="margin-bottom: 15px;">
-    <b>Strict Mode:</b> Prioritizes paint longevity. I will only suggest washing when roads are dry enough to prevent immediate "tacky salt" film.
+    <div id="log-list" style="margin-bottom:20px; font-size:0.9em; max-height:200px; overflow-y:auto; color:#cbd5e1;">No entries.</div>
+    <button class="btn btn-log" onclick="addNewWash()">+ LOG NEW WASH</button>
   </div>
 
-  <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px dashed #475569;">
-    <div style="font-size:0.7em; color:#94a3b8; text-transform:uppercase; font-weight:900;">Brine Exposure Score</div>
-  <div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">
-    <span id="exposure-val" style="font-size:1.4em; font-weight:900; color:#f43f5e;">0</span>
-    <span style="font-size:0.7em; color:#94a3b8;">CORROSIVE DAYS</span>
+  <div id="verdict-drawer" class="drawer">
+    <b>📋 Opening Analysis:</b><br>
+    <span id="verdict-text">--</span><br>
+    <span id="solar-verdict-display" style="display:block; margin-top:8px; color:var(--gold); font-weight:800;"></span>
   </div>
-  <div id="exposure-status" style="font-size:0.7em; color:#cbd5e1; margin-top:5px;">Chassis is currently stable.</div>
-</div>
 
-
-  <div style="font-weight:900; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:15px; margin-top:25px; letter-spacing:1px; color:#94a3b8; font-size:0.7em; text-transform:uppercase;">
-    Wash History (Max 5 Entries)
-  </div>
-  <div id="log-list" style="margin-bottom:20px; font-size:0.9em; max-height:200px; overflow-y:auto; color:#cbd5e1;">
-    No entries logged.
-  </div>
-  
-  <button class="btn btn-log" onclick="addNewWash()" style="width:100%; padding:12px; font-weight:bold; background:#334155; border:none; border-radius:8px; color:white; cursor:pointer; transition: background 0.2s;">
-    + LOG NEW WASH
-  </button>
-</div>
-
-<div id="verdict-drawer" class="drawer">
-  <b>📋 Opening Analysis:</b><br>
-  <span id="verdict-text">--</span><br>
-  <span id="solar-verdict-display" style="display:block; padding-bottom: 8px; margin-top:8px; color:var(--gold); font-weight:800;"></span>
-  
-  <div id="what-if-container" style="margin-top:12px; padding-top:12px; border-top:1px solid #334155;">
-    <b style="color:#94a3b8; font-size:0.9em;">🤔 WHAT IF I WASH NOW?</b><br>
-    <span id="what-if-text" style="font-size:0.95em; color:#cbd5e1;">--</span>
-  </div>
-  <br><b>The "Lag" Rule:</b> Your car's chassis stays frozen much longer than the air. Driving for 15+ minutes before a wash warms the steel.
-</div>
-
-<div class="alerts-area">
-
-<div class="alerts-area">
-  <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
-    <span>📝</span>
-    <div class="b-info">
-      <span style="font-weight:800;">ACTION: LOG A WASH</span><br>
-      <span style="font-size:0.7em;">Calculate cumulative salt load ▼</span>
-      <div id="log-reminder-drawer" class="alert-drawer">
-        Log your last wash in the <b>Vehicle Profile</b> to track your cumulative chassis corrosion risk and current exposure score.
-      </div>
+  <div class="alerts-area">
+    <div id="log-reminder-prompt" class="banner amber" onclick="toggleElement('log-reminder-drawer')">
+      <span>📝</span><div class="b-info"><b>ACTION: LOG A WASH</b></div>
+    </div>
+    <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
+      <span>🌫️</span><div class="b-info"><b>VISIBILITY: HIGH SALT-FILM</b></div>
+    </div>
+    <div id="ice-alert" class="banner indigo" onclick="toggleElement('ice-drawer')">
+      <span>🧊</span><div class="b-info"><b>SAFETY: BLACK ICE RISK</b></div>
+    </div>
+    <div id="plugin-alert" class="banner blue" onclick="toggleElement('plugin-drawer')">
+      <span>🔌</span><div class="b-info"><b>ENGINE: PLUG-IN REQUIRED</b></div>
+    </div>
+    <div id="regen-alert" class="banner indigo" onclick="toggleElement('regen-drawer')">
+      <span>🔋</span><div class="b-info"><b>DRIVING: REGEN LIMITED</b></div>
+    </div>
+    <div id="rust-alert" class="banner amber" onclick="toggleElement('rust-drawer')">
+      <span>🧪</span><div class="b-info"><b>CHASSIS: PEAK CORROSION</b></div>
+    </div>
+    <div id="freeze-alert" class="banner blue" onclick="toggleElement('freeze-drawer')">
+      <span>⏱️</span><div class="b-info"><b id="freeze-val">-- MIN UNTIL FREEZE</b></div>
+    </div>
+    <div id="chip-alert" class="banner orange" onclick="toggleElement('chip-drawer')">
+      <span>💎</span><div class="b-info"><b>DAMAGE: HIGH CHIP RISK</b></div>
     </div>
   </div>
 
-
-  <div id="fluid-alert" class="banner orange" onclick="toggleElement('fluid-drawer')">
-    <span>🌫️</span>
-    <div class="b-info">
-      <span style="font-weight:800;">VISIBILITY: HIGH SALT-FILM</>
-      <span style="font-size:0.7em;">Peak Washer Fluid Usage ▼</span>
-      <div id="fluid-drawer" class="alert-drawer">
-        "Dry salt spray" is at its peak. You will likely use 3x more washer fluid today than usual. Ensure your reservoir is topped with -40°C rated fluid.
-      </div>
-    </div>
-  </div>
-
-  <div id="ice-alert" class="banner indigo" onclick="toggleElement('ice-drawer')">
-    <span>🧊</span>
-    <div class="b-info">
-      <span style="font-weight:800;">SAFETY: BLACK ICE RISK</span><br>
-      <span style="font-size:0.7em;">Invisible Surface Glaze ▼</span>
-      <div id="ice-drawer" class="alert-drawer">
-        Roads may look wet but offer no tire spray. Watch for "invisible" glaze on bridges and shadowed turns. Avoid cruise control.
-      </div>
-    </div>
-  </div>
-
-  <div id="plugin-alert" class="banner blue" onclick="toggleElement('plugin-drawer')">
-    <span>🔌</span>
-    <div class="b-info">
-      <span style="font-weight:800;">ENGINE: PLUG-IN REQUIRED</span><br>
-      <span style="font-size:0.7em;">Temp below -20°C detected ▼</span>
-      <div id="plugin-drawer" class="alert-drawer">
-        Extreme cold detected. Plug in your block heater for at least 3-4 hours to reduce engine strain and battery drain.
-      </div>
-    </div>
-  </div>
-
-  <div id="regen-alert" class="banner indigo" onclick="toggleElement('regen-drawer')">
-    <span>🔋</span>
-    <div class="b-info">
-      <span style="font-weight:800;">DRIVING: REGEN LIMITED</span><br>
-      <span style="font-size:0.7em;">Battery too cold for intake ▼</span>
-      <div id="regen-drawer" class="alert-drawer">
-        Your battery management system (BMS) will limit regenerative braking to protect the cells. Expect to use your physical brake pedal more than usual.
-      </div>
-    </div>
-  </div>
-
-  <div id="rust-alert" class="banner amber" onclick="toggleElement('rust-drawer')">
-    <span>🧪</span>
-    <div class="b-info">
-      <span style="font-weight:800;">CHASSIS: PEAK CORROSION</span><br>
-      <span style="font-size:0.7em;">Salt is chemically active ▼</span>
-      <div id="rust-drawer" class="alert-drawer">
-        At these temperatures, road salt forms a liquid brine that accelerates oxidation. <b>Liquid salt eats steel.</b> An undercarriage rinse is mandatory.
-      </div>
-    </div>
-  </div>
-
-  <div id="freeze-alert" class="banner blue" onclick="toggleElement('freeze-drawer')">
-    <span>⏱️</span>
-    <div class="b-info">
-      <span style="font-weight:800;">MAINTENANCE: DRYING WINDOW</span><br>
-      <span id="freeze-val" style="font-size:0.7em; font-weight:800;">-- MIN UNTIL FREEZE ▼</span>
-      <span class="info-trigger" onclick="event.stopPropagation(); toggleElement('window-info')">i</span>
-      <div id="window-info" class="info-drawer">
-          <b>Drying Window:</b> Your countdown to dry rubber seals before they freeze shut. Wind chill acts as a heat sink that bonds ice to your frame in minutes.
-      </div>
-      <div id="freeze-drawer" class="alert-drawer">
-        Wipe door jambs immediately. Apply silicone spray to weatherstripping to prevent the rubber from bonding to the frame.
-      </div>
-    </div>
-  </div>
-
-  <div id="chip-alert" class="banner orange" onclick="toggleElement('chip-drawer')">
-    <span>💎</span>
-    <div class="b-info">
-      <span style="font-weight:800;">DAMAGE: HIGH CHIP RISK</span><br>
-      <span style="font-size:0.7em;">Pickle Sand in Use ▼</span>
-      <div id="chip-drawer" class="alert-drawer">
-        Calgary uses "Pickle" (97% gravel). Increase following distance to 4+ seconds. Avoid brushes on dry salt-crust to avoid scratching the clear-coat.
-      </div>
-    </div>
-  </div>
-</div>
-
- <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
-  <div id="forecast" style="display:flex;gap:10px;margin-top:15px;overflow-x:auto;padding-bottom:5px;">
-    </div>
-</a>
+  <div id="forecast"></div>
 
   <div class="fact-box">
-    <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase; margin-bottom:6px; letter-spacing:1px;">YYC Insider Insight</div>
+    <div style="font-weight:900; color:var(--gold); font-size:0.75em; text-transform:uppercase;">YYC Insider Insight</div>
     <div id="random-fact">--</div>
   </div>
 
-  <div id="sync-footer" class="footer">YYC CAR WASH FORECASTER </div>
+  <div class="footer">YYC CAR WASH FORECASTER</div>
 </div>
 
-<script>
-
-
-// --- 1. UI NAVIGATION & LAYERS ---
-function toggleLogicLayers() {
-    const info = document.getElementById('logic-info');
-    if (info.style.display === 'block') {
-        info.style.display = 'none';
-        switchLayer('layer-logic'); // Reset to overview for next time
-    } else {
-        info.style.display = 'block';
-    }
-}
-
-function switchLayer(targetId) {
-    const layer1 = document.getElementById('layer-logic');
-    const layer2 = document.getElementById('layer-physics');
-    if (layer1 && layer2) {
-        layer1.style.display = (targetId === 'layer-logic') ? 'block' : 'none';
-        layer2.style.display = (targetId === 'layer-physics') ? 'block' : 'none';
-    }
-}
-
-function toggleElement(id) {
-    const target = document.getElementById(id);
-    if (target) target.style.display = target.style.display === 'block' ? 'none' : 'block';
-}
-
-
-// --- 2. ASSETS & INSIGHTS ---
-const yycInsights = [
-  "<b>HYBRID TIP:</b> At -19°C, regen braking is limited because the BMS restricts power intake until the cells warm up.",
-  "<b>WIPER TIP:</b> Wipe blades with winter fluid after a wash. This removes residue that causes them to freeze to the windshield.",
-  "<b>FLUID TIP:</b> Only use washer fluid rated for -40°C. Summer fluids will freeze and crack your reservoir in a Calgary snap.",
-  "<b>YYC FACT:</b> 'Pickle' mixture is 97% gravel and 3% salt. Salt is inert below -15°C, making sand the primary grip provider.",
-  "<b>CHINOOK FACT:</b> A rapid thaw creates 'Active Slush'—the most corrosive road state. Wait for dry roads before washing.",
-  "<b>LOCK TIP:</b> Avoid high-pressure spray directly into door handles at -15°C. Water forced into the tumbler will leave you locked out.",
-  "<b>GARAGE WARNING:</b> Parking in a heated garage 'wakes up' frozen salt. Rusting happens 10x faster at room temperature than in the cold.",
-  "<b>MAG-CHLORIDE FACT:</b> Calgary uses liquid Mag-Brine on Deerfoot. It is more corrosive than rock salt and stays wet longer.",
-  "<b>VISIBILITY TIP:</b> Road spray at -5°C creates a 'Salt Film' that can consume an entire reservoir of fluid in one commute. Top up now and always keep a spare jug of winter-rated washer fluid in the trunk.",
-  "<b>COLD SNAP CHECKLIST:</b> For every 5°C drop, tires lose ~1 PSI of pressure. Check your levels when the 'Plug-In' alert is active to prevent uneven wear and reduced range.",
-  "<b>BATTERY FACT:</b> At -18°C, a standard lead-acid battery loses 40% of its cranking power. If the 'Corrosion Speedometer' is Dormant, prioritize battery health over aesthetics.",
-  "<b>PSI TIP:</b> Nitro-filled tires still fluctuate in Calgary snaps. Always calibrate your pressure in the morning before the tires warm up from road friction.",
-  "<b>DOOR SEAL HACK:</b> After a winter wash, apply a thin layer of silicone lubricant or even non-stick cooking spray to the rubber weatherstripping to prevent door bonding.",
-  "<b>EV RANGE TIP:</b> In deep cold, use 'Seat Heat' instead of the cabin heater to save up to 15% of your battery range during short city commutes.",
-  "<b>BLACK ICE PHYSICS:</b> When the air is -5°C but the sun is out, asphalt absorbs thermal energy. This creates a thin, invisible melt-layer that flash-freezes in shadows.",
-  "<b>UNDERBODY CARE:</b> Salt-dust is hygroscopic, meaning it pulls moisture out of the air. Even on dry days, salt 'dust' on your chassis can start corroding if the humidity rises.",
-  "<b>WASHER FLUID PHYSICS:</b> Avoid using 'De-Icer' fluid on a bone-dry windshield. The alcohol evaporates too fast, leaving a 'white-out' streak that blocks vision instantly.",
-  "<b>CHINOOK CAUTION:</b> A rapid 20°C rise doesn't just melt ice—it expands the metal panels of your car. This can 'pop' existing windshield chips into full-length cracks."
-  
-];
-
-// --- 3. WASH LOGGING & HISTORY ---
-function addNewWash() {
-  let h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
-  h.unshift(new Date().toISOString());
-  if (h.length > 5) h.pop();
-  localStorage.setItem('washLogV2', JSON.stringify(h));
-  updateUI();
-  if (navigator.vibrate) navigator.vibrate(25);
-  setTimeout(() => { 
-    const drawer = document.getElementById('log-drawer');
-    if (drawer) drawer.style.display = 'none'; 
-  }, 800);
-}
-
-function undoWash() {
-  let h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
-  if (h.length > 0) { h.shift(); localStorage.setItem('washLogV2', JSON.stringify(h)); updateUI(); }
-}
-
-
-
-function updateUI() {
-  const h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
-  const list = document.getElementById('log-list'), lastDate = document.getElementById('last-date');
-  const exposureVal = document.getElementById('exposure-val'), exposureStatus = document.getElementById('exposure-status');
-  const nag = document.getElementById('maintenance-nag'), fBox = document.getElementById('random-fact');
-  
-  // ADD THESE TWO LINES HERE:
-  const prompt = document.getElementById('log-reminder-prompt');
-  if (prompt) prompt.style.display = (h.length === 0) ? 'flex' : 'none';
-  
-  if (fBox) fBox.innerHTML = yycInsights[Math.floor(Math.random() * yycInsights.length)];
-
-  if (h.length > 0) {
-    const dLast = new Date(h[0]);
-    lastDate.innerText = dLast.toLocaleDateString('en-CA', {month:'short', day:'numeric'});
-    const days = Math.floor((new Date() - dLast) / 86400000);
-    if (nag) nag.style.display = days >= 7 ? 'block' : 'none';
-    if (exposureVal) { exposureVal.innerText = days; exposureVal.style.color = days >= 10 ? "#f43f5e" : days >= 5 ? "#fbbf24" : "#10b981"; }
-    if (exposureStatus) exposureStatus.innerHTML = days >= 10 ? "⚠️ <b>CRITICAL:</b> Salt pitted." : days >= 5 ? "<b>MODERATE:</b> Brine bonding." : "<b>SAFE:</b> Minimal salt.";
-    list.innerHTML = h.map((item, idx) => `
-      <div style="padding:6px 0; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;">
-        <span>📅 ${new Date(item).toLocaleDateString('en-CA', {month:'short', day:'numeric'})} <span style="color:#94a3b8; font-size:0.9em; margin-left:4px;">${new Date(item).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
-        ${idx === 0 ? '<span onclick="undoWash()" style="color:#f43f5e; font-weight:bold; cursor:pointer;">Undo</span>' : ''}
-      </div>`).join('');
-  } else {
-    lastDate.innerText = "Setup Required";
-    if (exposureVal) exposureVal.innerText = "??";
-    list.innerHTML = "No entries logged.";
-  }
-}
-
-// --- 4. CORE WEATHER ENGINE ---
-async function updateWeather(isFullRefresh = true) {
-  if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC SENSOR • SYNCING...";
-  const url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.07&daily=temperature_2m_max,precipitation_sum&hourly=precipitation,temperature_2m,wind_speed_10m&timezone=America/Edmonton&past_days=5";
-  
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const todayIdx = 5, curHr = (todayIdx * 24) + new Date().getHours(); 
-    const curTemp = data.hourly.temperature_2m[curHr], wind = data.hourly.wind_speed_10m[curHr];
-    const isStrict = document.getElementById('risk-toggle')?.checked ?? true;
-    const isHighVoltage = document.getElementById('ev-toggle')?.checked ?? false;
-
-    // Road Wetness Logic
-    let hadMelt = false, totalPrec = 0;
-    for (let i = 0; i <= todayIdx; i++) {
-        if (data.daily.temperature_2m_max[i] > 0) hadMelt = true;
-        totalPrec += (data.daily.precipitation_sum[i] || 0);
-    }
-    const roadsFreezeDried = (curTemp < -8 && wind > 18);
-    const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
-
-    // Main Verdict
-    let vText = "WAIT", vCol = "var(--accent)", status = "🔵 NEUTRAL", judgement = "Analyzing...";
-    if (curTemp < -12) {
-        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "❄️ TOO COLD";
-        judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk." : "Mechanical risk outweighs benefit.";
-    } else if (effectiveWetness || (curTemp > -5 && curTemp < 3)) {
-        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "🚜 ROADS ARE MESSY"; 
-        judgement = "<b>Liquid Brine:</b> Roads are tacky and salt is highly corrosive.";
-    } else if (curTemp > -6) {
-        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "🚿 WASH NOW"; 
-        judgement = "<b>Ideal Conditions:</b> Roads are dry and salt is dormant.";
-    }
-
-    document.getElementById('final-verdict').innerText = vText;
-    document.getElementById('final-verdict').style.backgroundColor = vCol;
-    document.body.style.backgroundColor = vCol;
-    document.getElementById('status-badge').innerText = status;
-    document.getElementById('status-badge').style.color = vCol;
-    document.getElementById('cur-temp-display').innerText = Math.round(curTemp) + "°C Currently";
-    document.getElementById('judgement-call').innerHTML = judgement;
-
-    // Road Chemistry Labeling
-    let sI = "Liquid Brine", chemMsg = "Peak corrosive state. Salt is a concentrated liquid acid.";
-    if (curTemp <= -17) { sI = "Dormant Dust"; chemMsg = "Salt cannot melt ice. High paint-chip risk."; }
-    else if (curTemp > -17 && curTemp < -5) { sI = "Abrasive Bond"; chemMsg = "Salt is sticky and bonding to metal."; }
-    else if (curTemp >= 3) { sI = "Diluted Runoff"; chemMsg = "Road spray is mostly water."; }
-    document.getElementById('salt-val').innerText = sI;
-    document.getElementById('salt-logic-text').innerHTML = `<b>🧪 ${sI}:</b> ${chemMsg}`;
-
-    // Adaptive Banners
-    const setDisp = (id, cond) => { const el = document.getElementById(id); if (el) el.style.display = cond ? 'flex' : 'none'; };
-    setDisp('plugin-alert', curTemp <= -20);
-    setDisp('regen-alert', isHighVoltage && curTemp <= -15);
-    setDisp('fluid-alert', curTemp < -8 && curTemp > -18);
-    setDisp('chip-alert', curTemp < -14);
-    setDisp('rust-alert', (curTemp > -5 && curTemp < 3 && effectiveWetness));
-    setDisp('ice-alert', (curTemp <= 1 && effectiveWetness));
-    if (curTemp < 0) {
-        let fT = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
-        if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE ▼`;
-        setDisp('freeze-alert', true);
-    } else { setDisp('freeze-alert', false); }
-
-    // --- STRATEGIC OPENING SEARCH ---
-    let startSearchAt = (vText.includes("WAIT") || vText.includes("NO GO")) ? (todayIdx + 1) : todayIdx;
-    let backupIdx = null, finalIdx = null;
-    for (let k = startSearchAt; k < data.daily.time.length; k++) {
-      if (data.daily.temperature_2m_max[k] > -6 && (data.daily.precipitation_sum[k] || 0) < 0.1) {
-        const tW = data.hourly.wind_speed_10m[k * 24 + 12], tT = data.hourly.temperature_2m[k * 24 + 12];
-        if (backupIdx === null) backupIdx = k;
-        if (!(tW < 8 || tT > -2)) { finalIdx = k; break; }
-      }
-    }
-    finalIdx = finalIdx || backupIdx;
-
-    if (finalIdx !== null) {
-        const k = finalIdx;
-        const dDate = data.daily.time[k];
-        // The fix: Create a proper date object and format the suffix
-        const dateObj = new Date(dDate + "T00:00:00");
-        const dateSuffix = dateObj.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
-        
-        // Combine the relative name (Today/Tomorrow) with the suffix
-        let fDate = (k === todayIdx) ? `Today (${dateSuffix})` : (k === todayIdx + 1) ? `Tomorrow (${dateSuffix})` : dateSuffix;
-
-        const tW = data.hourly.wind_speed_10m[k * 24 + 12];
-        const tT = data.hourly.temperature_2m[k * 24 + 12];
-        
-        let conf = (tW > 18 && tT < -8) ? `<span style="color:#10b981; font-size:0.75em; margin-left:8px;">🛡️ HIGH CONFIDENCE</span>` : `<span style="color:#f43f5e; font-size:0.75em; margin-left:8px;">⚠️ LOW CONFIDENCE</span>`;
-        let reason = (tW > 18 && tT < -8) ? "High winds will <b>freeze-dry</b> the pavement." : "Warmth means roads will likely stay <b>tacky and wet.</b>";
-
-        // Restore UI displays
-        document.getElementById('next-val').innerText = fDate;
-        document.getElementById('verdict-text').innerHTML = `<b>${fDate}</b> ${conf}<br>${reason}`;
-        
-        // Restore Solar/Thermal Window formatting
-        const formatT = (h) => { let wrap = (h + 24) % 24; return (wrap % 12 || 12) + (wrap >= 12 ? ' PM' : ' AM'); };
-        const dayTemps = data.hourly.temperature_2m.slice(k * 24, (k + 1) * 24);
-        const maxHr = dayTemps.indexOf(Math.max(...dayTemps));
-        let wType = (maxHr > 7 && maxHr < 18) ? "☀️ Solar Window" : "🌡️ Thermal Window";
-        
-        if (document.getElementById('solar-verdict-display')) {
-             document.getElementById('solar-verdict-display').innerHTML = `<b>${wType}: ${formatT(maxHr-1)} — ${formatT(maxHr+2)}</b><br><span style="font-size:0.8em; font-weight:400; color:#94a3b8;">${maxHr > 7 && maxHr < 18 ? 'Best for drying seals.' : 'Night peak detected. Use heated bay.'}</span>`;
-        }
-        
-        
-    }
-
-
-    // What-If logic
-    const whatIf = document.getElementById('what-if-text');
-    if (vText.includes("GO: MAIN")) whatIf.innerHTML = "Roads are dry. Wash now to stay clean for 48h+.";
-    else if (vText.includes("WAIT: SALTY")) whatIf.innerHTML = "<b>Waste of money.</b> Brown brine film will coat your paint in 15 minutes.";
-    else if (vText.includes("NO GO")) whatIf.innerHTML = "<b>Danger:</b> Water will flash-freeze in locks instantly.";
-
-    // Forecast bar
-    let fH = ""; for (let j = todayIdx; j < todayIdx + 5; j++) {
-      const dName = (j === todayIdx) ? "Today" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(data.daily.time[j] + "T00:00:00").getDay()];
-      fH += `<div style="flex:1;text-align:center;"><div style="font-size:0.6em;font-weight:900;color:#94a3b8;">${dName}</div><div style="font-size:1.1em;margin:5px 0;">${data.daily.precipitation_sum[j] > 0.1 ? '❄️' : '☀️'}</div><div style="font-size:0.8em;font-weight:900;">${Math.round(data.daily.temperature_2m_max[j])}°</div></div>`;
-    }
-    document.getElementById('forecast').innerHTML = fH;
-    if (isFullRefresh) document.getElementById('sync-tag').innerText = "YYC UPDATED: " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    document.getElementById('card').style.display = 'block';
-    
-        // --- FINAL CORROSION SPEEDOMETER INJECTION ---
-    const needle = document.getElementById('corrosion-needle');
-    const desc = document.getElementById('corrosion-desc');
-    
-    if (needle && desc) {
-        let riskScore = 0;
-        
-        // 1. ARRHEIUS KINETICS: Temperature doubling rule
-        if (curTemp <= -15) riskScore = 5; 
-        else if (curTemp <= -8) riskScore = 22; 
-        else if (curTemp < 0) riskScore = 65; 
-        else if (curTemp < 10) riskScore = 88; 
-        else riskScore = 100; // Redline in heated garage
-
-        // 2. CATALYST CHECK: Moisture is the "fuel" for rust
-        // If roads are dry/freeze-dried, reaction speed drops significantly
-        if (!effectiveWetness && curTemp < 0) riskScore *= 0.4;
-        
-        // Final UI Updates
-        needle.style.left = `${Math.min(riskScore, 100)}%`;
-        
-        desc.innerHTML = riskScore <= 15 ? "<span style='color:#10b981;'>DORMANT:</span> Metal is chemically stable." : 
-                        riskScore <= 50 ? "<span style='color:#fbbf24;'>ACTIVE:</span> Surface oxidation beginning." : 
-                        riskScore <= 85 ? "<span style='color:#f43f5e;'>CRITICAL:</span> Brine wicking into chassis." :
-                        "<span style='color:#f43f5e;'>🔥 REDLINE:</span> Accelerated pitting. Rinse now.";
-    }
-    
-    
-    updateUI();
-    
-  } catch (e) { console.error(e); document.getElementById('sync-tag').innerText = "SYNC ERROR"; }
-}
-
-// --- 5. INITIALIZATION & PWA ---
-function saveProfile() {
-  localStorage.setItem('isEV', document.getElementById('ev-toggle').checked);
-  localStorage.setItem('isStrict', document.getElementById('risk-toggle').checked);
-  updateWeather(false); 
-}
-document.getElementById('ev-toggle').checked = localStorage.getItem('isEV') === 'true';
-document.getElementById('risk-toggle').checked = localStorage.getItem('isStrict') !== 'false';
-updateWeather();
-
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e => {}); }
-if (navigator.userAgent.match(/iphone|ipad|ipod/i)) document.getElementById('ios-prompt').style.display = 'block';
-
-// --- 6. GESTURES ---
-let touchStartY = 0;
-const card = document.getElementById('card');
-document.addEventListener('touchstart', e => { touchStartY = e.touches[0].pageY; }, {passive: false});
-document.addEventListener('touchmove', e => {
-    const distance = e.touches[0].pageY - touchStartY;
-    if (window.scrollY === 0 && distance > 0) card.style.transform = `translateY(${Math.min(distance / 5, 30)}px)`;
-}, {passive: true});
-document.addEventListener('touchend', e => {
-    if (window.scrollY === 0 && (e.changedTouches[0].pageY - touchStartY) > 150) {
-        card.classList.add('syncing');
-        updateWeather().then(() => { setTimeout(() => { card.classList.remove('syncing'); card.style.transform = "translateY(0)"; }, 500); });
-    } else card.style.transform = "translateY(0)";
-}, {passive: true});
-
-
-</script>
+<script src="app.js"></script>
 </body>
 </html>

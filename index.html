@@ -41,14 +41,18 @@
       I analyze Calgary's road chemistry to tell you <b>when</b> to wash, not just if it's sunny. 
       <br>
       <span onclick="toggleLogicLayers()" style="color:#38bdf8; text-decoration:underline; cursor:pointer; font-weight:700;">
-        How does a Strategic Opening work? →
+        How does a Strategic Opening work? 
       </span>
 
       <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
         <b style="color:var(--gold);">FIRST STEP:</b> Tap <b>Vehicle Profile</b> below. Log your last wash to activate your chassis salt-load sensors and tracking.
       </div>
     </span>
-    <button onclick="dismissWelcome()" style="background:rgba(255,255,255,0.1); border:none; color:white; border-radius:6px; padding: 6px 10px; cursor:pointer; font-size:1em;">✕</button>
+<button onclick="dismissWelcome()" 
+        style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; line-height: 1;">
+  &times;
+</button>
+
   </div>
 </div>
 
@@ -72,7 +76,7 @@
 
   <span onclick="event.stopPropagation(); toggleLogicLayers()" 
         style="position: absolute; top: 10px; right: 12px; cursor:pointer; font-size: 0.9em; opacity: 0.6; padding: 4px; z-index: 10;">
-    ⓘ
+    
   </span>
 </div>
 
@@ -350,10 +354,19 @@
 </div>
 
  <a href="#" id="weather-link" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
-   <div style="text-align: center; font-size: 0.6em; color: #475569; margin-top: 8px; letter-spacing: 0.5px;">
-    FORECAST SHOWS DAILY HIGH / LOW PEAKS
-  <div id="forecast" style="display:flex;gap:10px;margin-top:15px;overflow-x:auto;padding-bottom:5px;"></div>
+   <div style="text-align: center; margin-top: 10px; line-height: 1.6;">
+    <div style="font-size: 0.58rem; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 500;">
+        Forecast shows daily high / low peaks
+    </div>
+    <div onclick="openWeatherApp()" style="font-size: 0.65rem; color: #38bdf8; font-weight: 800; cursor: pointer; display: inline-block; margin-top: 4px;">
+        OPEN WEATHER APP ↗
+    </div>
+
+<div id="forecast" onclick="openWeatherApp()" style="display: flex; justify-content: space-between; padding: 20px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
+  </div>
+
 </div>
+
 </a>
 
   <div class="fact-box">
@@ -367,7 +380,7 @@
 <footer id="reset-link-container" style="text-align: center; margin-top: 10px; padding-bottom: 20px;">
   <button onclick="resetOnboarding()" 
           style="background: rgba(100, 116, 139, 0.05); border: 1px solid rgba(100, 116, 139, 0.1); color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 0.7em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px;">
-    <span>✨</span> Reset Welcome Tour
+    <span></span> Reset Welcome Tour
   </button>
 </footer>
 

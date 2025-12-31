@@ -152,6 +152,8 @@ function updateUI() {
   if (h.length > 0) {
     const dLast = new Date(h[0]);
     const days = Math.floor((new Date() - dLast) / 86400000);
+    const resetLink = document.getElementById('reset-link-container');
+    if (resetLink) resetLink.style.display = 'none';
     
     // Update Salt Load Bar
     const percent = Math.min(Math.round((days / threshold) * 100), 100);
@@ -184,6 +186,8 @@ function updateUI() {
     // --- EMPTY STATE / FIRST LOG PROMPT ---
     if (lastDate) lastDate.innerText = "Setup Required";
     if (bar) bar.style.width = '0%';
+    const resetLink = document.getElementById('reset-link-container');
+    if (resetLink) resetLink.style.display = 'block';
     
     // The Blinking Instruction
     if (loadLabel) {
@@ -532,3 +536,27 @@ document.addEventListener('touchend', e => {
         card.style.transform = "translateY(0)";
     }
 }, {passive: true});
+
+function checkOnboarding() {
+    const h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
+    const banner = document.getElementById('welcome-banner');
+    const dismissed = localStorage.getItem('dismissedWelcome') === 'true';
+
+    // Show banner only if no logs exist AND they haven't closed it manually before
+    if (h.length === 0 && !dismissed) {
+        banner.style.display = 'block';
+    }
+}
+
+function dismissWelcome() {
+    document.getElementById('welcome-banner').style.display = 'none';
+    localStorage.setItem('dismissedWelcome', 'true');
+}
+
+// Call this inside your window.onload or at the very end of app.js
+checkOnboarding();
+
+function resetOnboarding() {
+    localStorage.removeItem('dismissedWelcome');
+    location.reload(); // Refresh to show the banner again
+}

@@ -1,5 +1,5 @@
  :root { --bg: #0f172a; --card: #ffffff; --accent: #1e293b; --blue: #0284c7; --red: #e11d48; --gold: #fbbf24; --green: #059669; --indigo: #4338ca; }
-    body { font-family: -apple-system, system-ui, sans-serif, 'Noto Color Emoji'; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.6s ease; overscroll-behavior-y: contain; position: relative;}
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.6s ease; overscroll-behavior-y: contain; position: relative;}
      /* This adds the film grain over the whole screen */
     body::after {
     content: "";

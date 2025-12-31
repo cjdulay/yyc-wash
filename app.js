@@ -563,10 +563,9 @@ function resetOnboarding() {
 
 function openWeatherApp() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
 
     if (isIOS) {
-        // 1. Try Apple Weather App
+        // Apple Weather App Protocol
         window.location.href = "weather://";
         
         // Fallback for iOS
@@ -574,20 +573,11 @@ function openWeatherApp() {
             if (!document.hidden) {
                 window.open("https://weather.apple.com", "_blank");
             }
-        }, 500);
-    } else if (isAndroid) {
-        // 2. Try to trigger the Google Weather Intent
-        // This is a special URI that Android recognizes to open the Google Weather card
-        window.location.href = "intent://#Intent;scheme=google.com/search?q=calgary+weather;package=com.google.android.googlequicksearchbox;end";
-        
-        // Fallback for Android (Standard Google Search)
-        setTimeout(() => {
-            if (!document.hidden) {
-                window.open("https://www.google.com/search?q=calgary+weather", "_blank");
-            }
-        }, 500);
+        }, 800);
     } else {
-        // Desktop/Other
+        // Android & Others: Direct Google Weather Card trigger
+        // This opens the search results which Android handles by sliding up the native weather UI
         window.open("https://www.google.com/search?q=calgary+weather", "_blank");
     }
+
 }

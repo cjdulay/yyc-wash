@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yyc-wash-v24'; // Increment this every time you push
+const CACHE_NAME = 'yyc-wash-v25'; // Increment this every time you push
 const ASSETS = [
   './', 
   './index.html', 

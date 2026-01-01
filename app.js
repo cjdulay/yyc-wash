@@ -251,15 +251,15 @@ async function updateWeather(isFullRefresh = true) {
     const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
 
     // Main Verdict
-    let vText = "WAIT", vCol = "var(--accent)", status = "\u26AA NEUTRAL", judgement = "Analyzing...";
+    let vText = "WAIT", vCol = "var(--accent)", status = "\u26AA NEUTRAL", judgement = "Analyzing...";
     if (curTemp < -12) {
-        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "\u2744\ufe0f\u2744\ufe0f TOO COLD";
+        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "\u2744\ufe0f\u2744\ufe0f TOO COLD";
         judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk." : "Mechanical risk outweighs benefit.";
     } else if (effectiveWetness || (curTemp > -5 && curTemp < 3)) {
-        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "\ud83d\udca9 ROADS ARE MESSY"; 
+        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "\ud83d\udca9 ROADS ARE MESSY"; 
         judgement = "<b>Liquid Brine:</b> Roads are tacky and salt is highly corrosive.";
     } else if (curTemp > -6) {
-        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "\u2705 WASH NOW"; 
+        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "\u2705 WASH NOW"; 
         judgement = "<b>Ideal Conditions:</b> Roads are dry and salt is dormant.";
     }
 
@@ -289,7 +289,7 @@ async function updateWeather(isFullRefresh = true) {
     setDisp('ice-alert', (curTemp <= 1 && effectiveWetness));
     if (curTemp < 0) {
         let fT = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
-        if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE `;
+        if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE &#x1f976;`;
         setDisp('freeze-alert', true);
     } else { setDisp('freeze-alert', false); }
     

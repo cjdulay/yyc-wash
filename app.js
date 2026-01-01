@@ -1,4 +1,3 @@
-
 // --- 1. UI NAVIGATION & LAYERS ---
 function toggleElement(id) {
     const target = document.getElementById(id);
@@ -289,7 +288,7 @@ async function updateWeather(isFullRefresh = true) {
     setDisp('ice-alert', (curTemp <= 1 && effectiveWetness));
     if (curTemp < 0) {
         let fT = Math.max(3, Math.round(20 + (curTemp * 1.5) - (wind * 0.4)));
-        if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE &#x1f976;`;
+        if (document.getElementById('freeze-val')) document.getElementById('freeze-val').innerText = `${fT} MIN UNTIL FREEZE \uD83E\uDD76`;
         setDisp('freeze-alert', true);
     } else { setDisp('freeze-alert', false); }
     

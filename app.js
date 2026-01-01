@@ -133,7 +133,7 @@ function updateUI() {
   // --- 2. SET UP VARIABLES ---
   const h = JSON.parse(localStorage.getItem('washLogV2') || "[]");
   const isStrict = document.getElementById('risk-toggle')?.checked ?? true;
-  const threshold = isStrict ? 12 : 7; 
+  const threshold = isStrict ? 7 : 12; 
 
   const bar = document.getElementById('salt-load-bar');
   const loadLabel = document.getElementById('load-percent');
@@ -491,6 +491,7 @@ function addManualWash(val) {
 function saveProfile() {
   localStorage.setItem('isEV', document.getElementById('ev-toggle').checked);
   localStorage.setItem('isStrict', document.getElementById('risk-toggle').checked);
+  updateUI();
   updateWeather(false); 
 }
 document.getElementById('ev-toggle').checked = localStorage.getItem('isEV') === 'true';

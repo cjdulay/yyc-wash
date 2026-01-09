@@ -36,6 +36,13 @@
     border: 1.5px solid rgba(255,255,255,0.05);
 }
 
+/* Styling for the Stability Badge injected via JS */
+.stability-badge {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .active-tile {
     border-color: #fbbf24 !important;
     background: rgba(251, 191, 36, 0.12) !important;

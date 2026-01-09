@@ -215,8 +215,25 @@ function updateUI() {
 
 }
   
+ // --- 4. CORE WEATHER ENGINE ---
 
-// --- 4. CORE WEATHER ENGINE ---
+// THE SAFETY BRAIN: Ensures Today and Tomorrow use the same rules
+function getDaySafety(temp, precip, wind, isStrict, hadPastMelt = false) {
+    const tempFloor = isStrict ? -6 : -11;
+    const precipLimit = isStrict ? 0.1 : 0.6;
+    const isFreezeDried = (temp < -8 && wind > 18);
+
+    if (temp < -18) return { safe: false, msg: "TOO COLD", desc: "Inert cold. High rock chip risk." };
+    if (temp < tempFloor && !isFreezeDried) return { safe: false, msg: "FREEZE RISK", desc: "Water will flash-freeze in locks." };
+    if (precip > precipLimit) return { safe: false, msg: "WET ROADS", desc: "Roads are messy/snowy." };
+    
+    // THE CALGARY SLUSH RULE: If it's near zero and yesterday was warm, it's a mess.
+    if (temp > -4 && temp < 3 && hadPastMelt) return { safe: false, msg: "SALTY SLUSH", desc: "Roads are tacky and corrosive." };
+
+    return { safe: true, msg: "GO", desc: "Ideal Conditions." };
+}
+
+
 async function updateWeather(isFullRefresh = true) {
   const card = document.getElementById('card');
   const syncTag = document.getElementById('sync-tag');
@@ -249,18 +266,24 @@ async function updateWeather(isFullRefresh = true) {
     const roadsFreezeDried = (curTemp < -8 && wind > 18);
     const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
 
-    // Main Verdict
-    let vText = "WAIT", vCol = "var(--accent)", status = "\u26AA NEUTRAL", judgement = "Analyzing...";
-    if (curTemp < -12) {
-        vText = "NO GO: FREEZE RISK"; vCol = "var(--blue)"; status = "\u2744\ufe0f\u2744\ufe0f TOO COLD";
-        judgement = curTemp <= -17 ? "<b>Salt is inert.</b> High rock chip risk." : "Mechanical risk outweighs benefit.";
-    } else if (effectiveWetness || (curTemp > -5 && curTemp < 3)) {
-        vText = "WAIT: SALTY SLUSH"; vCol = "#92400e"; status = "\ud83d\udca9 ROADS ARE MESSY"; 
-        judgement = "<b>Liquid Brine:</b> Roads are tacky and salt is highly corrosive.";
-    } else if (curTemp > -6) {
-        vText = "GO: MAINTENANCE WINDOW"; vCol = "var(--green)"; status = "\u2705 WASH NOW"; 
-        judgement = "<b>Ideal Conditions:</b> Roads are dry and salt is dormant.";
-    }
+        // Main Verdict - SYNCHRONIZED WITH SAFETY BRAIN
+    const currentSafety = getDaySafety(curTemp, (data.hourly.precipitation[curHr] || 0), wind, isStrict, hadMelt);
+    
+    let vText = currentSafety.safe ? "GO: MAINTENANCE WINDOW" : `WAIT: ${currentSafety.msg}`;
+    let vCol = currentSafety.safe ? "var(--green)" : (currentSafety.msg.includes("COLD") || currentSafety.msg.includes("FREEZE")) ? "var(--blue)" : "#92400e";
+    
+    // Using your original Unicode setups
+    let status = currentSafety.safe ? "\u2705 WASH NOW" : currentSafety.msg.includes("COLD") ? "\u2744\ufe0f\u2744\ufe0f TOO COLD" : "\ud83d\udca9 ROADS ARE MESSY";
+    let judgement = currentSafety.desc; 
+
+    document.getElementById('final-verdict').innerText = vText;
+    document.getElementById('final-verdict').style.backgroundColor = vCol;
+    document.body.style.backgroundColor = vCol;
+    document.getElementById('status-badge').innerText = status;
+    document.getElementById('status-badge').style.color = vCol;
+    document.getElementById('cur-temp-display').innerText = Math.round(curTemp) + "\u00B0C Currently";
+    document.getElementById('judgement-call').innerHTML = `<b>${currentSafety.msg}:</b> ${judgement}`;
+    
 
     document.getElementById('final-verdict').innerText = vText;
     document.getElementById('final-verdict').style.backgroundColor = vCol;
@@ -293,99 +316,129 @@ async function updateWeather(isFullRefresh = true) {
     } else { setDisp('freeze-alert', false); }
     
 
-    // --- STRATEGIC OPENING SEARCH ---
+        // --- STRATEGIC OPENING SEARCH ---
     let startSearchAt = (vText.includes("WAIT") || vText.includes("NO GO")) ? (todayIdx + 1) : todayIdx;
     let backupIdx = null, finalIdx = null;
-    
-    // DEDUCED BOUNDARIES
-    // Strict ON: Conservative (stay clean). Strict OFF: Proactive (save paint).
-    const precipLimit = isStrict ? 0.1 : 0.6; 
-    const tempFloor = isStrict ? -6 : -11; 
+    let stability = "HIGH";
 
     for (let k = startSearchAt; k < data.daily.time.length; k++) {
       const maxT = data.daily.temperature_2m_max[k];
       const snow = data.daily.precipitation_sum[k] || 0;
+      const tW = data.hourly.wind_speed_10m[k * 24 + 12];
+      const tT = data.hourly.temperature_2m[k * 24 + 12];
+      const yesterdayMelt = data.daily.temperature_2m_max[k - 1] > 0;
 
-      if (maxT > tempFloor && snow < precipLimit) {
-        const tW = data.hourly.wind_speed_10m[k * 24 + 12];
-        const tT = data.hourly.temperature_2m[k * 24 + 12];
-        
+      // 1. Apply the Unified Safety Check (The Fix)
+      const safety = getDaySafety(maxT, snow, tW, isStrict, yesterdayMelt);
+
+      if (safety.safe) {
         if (backupIdx === null) backupIdx = k;
 
+        // 2. RETAIN YOUR ORIGINAL STRICT/AESTHETIC LOGIC
         if (isStrict) {
-            // STRICT MODE: Still requires specific wind/temp to skip the "Tacky" phase
-            if (!(tW < 8 || tT > -2)) { finalIdx = k; break; }
+            // STRICT: Requires specific wind/temp to skip "Tacky" phase
+            if (!(tW < 8 || tT > -2)) { 
+                finalIdx = k; 
+                if ((data.daily.precipitation_sum[k + 1] || 0) > 0.5) stability = "LOW";
+                break; 
+            }
         } else {
-            // AESTHETICS MODE: Neutralize salt as soon as safe (-11C floor)
-            finalIdx = k; break; 
+            // AESTHETICS: Neutralize salt as soon as floor is met
+            finalIdx = k; 
+            if ((data.daily.precipitation_sum[k + 1] || 0) > 0.5) stability = "LOW";
+            break; 
         }
       }
     }
+    // Restore your backup logic if no perfect window was found
     finalIdx = finalIdx || backupIdx;
-
-    if (finalIdx !== null) {
+    
+        if (finalIdx !== null) {
         const k = finalIdx;
         const dDate = data.daily.time[k];
         const dateObj = new Date(dDate + "T00:00:00");
-        const dateSuffix = dateObj.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
         
-        let fDate = (k === todayIdx) ? `Today (${dateSuffix})` : (k === todayIdx + 1) ? `Tomorrow (${dateSuffix})` : dateSuffix;
+        // 1. Create the bracketed format: (Sat, Jan 10)
+        const dateSuffix = dateObj.toLocaleDateString('en-CA', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: '2-digit' 
+        });
+        
+        // 2. Combine the label with the formatted date
+        let fDate = "";
+        const daysFromNow = k - todayIdx;
+
+        if (daysFromNow === 0) {
+            fDate = `Today (${dateSuffix})`; // Today (Fri, Jan 09)
+        } else if (daysFromNow === 1) {
+            fDate = `Tomorrow (${dateSuffix})`; // Tomorrow (Sat, Jan 10)
+        } else {
+            fDate = dateSuffix; // Sat, Jan 10 (for days further out)
+        }
+        
+        // 3. Update the UI
+        document.getElementById('next-val').innerText = fDate;
+        
         const tW = data.hourly.wind_speed_10m[k * 24 + 12];
         const tT = data.hourly.temperature_2m[k * 24 + 12];
         
-        // Dynamic Confidence & Reasoning
+        // --- STABILITY & REASONING ---
         let conf = "";
         let reason = "";
 
         if (isStrict) {
+            const sLab = stability === "HIGH" ? "🛡️ HIGH STABILITY" : "⚠️ VOLATILE";
             conf = (tW > 15 || tT < -8) 
-                ? `<span style="color:#10b981; font-size:0.75em;">\uD83D\uDEE1\uFE0F HIGH CONFIDENCE</span>` 
-                : `<span style="color:#f43f5e; font-size:0.75em;">\u26A0\uFE0F LOW CONFIDENCE</span>`;
-            reason = (tW > 18 && tT < -8) ? "High winds will <b>freeze-dry</b> the pavement." : "Warmth means roads will likely stay <b>tacky and wet.</b>";
+                ? `<span style="color:#10b981; font-size:0.75em;">${sLab}</span>` 
+                : `<span style="color:#f43f5e; font-size:0.75em;">⚠️ LOW CONFIDENCE</span>`;
+            reason = (tW > 18 && tT < -8) ? "High winds will <b>freeze-dry</b> the pavement." : "Clear conditions detected; check back tonight for shifts.";
         } else {
-            conf = `<span style="color:#38bdf8; font-size:0.75em;">\u2728 PAINT PROTECTION</span>`;
-            reason = "<b>Priority: Salt Neutralization.</b> Removing current salt crust is vital to stop oxidation, even if light spray returns.";
+            conf = `<span style="color:#38bdf8; font-size:0.75em;">✨ PAINT PROTECTION</span>`;
+            reason = "<b>Priority: Salt Neutralization.</b> Removing current salt crust is vital to stop oxidation.";
         }
 
+        // UPDATE THE UI
         document.getElementById('next-val').innerText = fDate;
         document.getElementById('verdict-text').innerHTML = `<b>${fDate}</b> ${conf}<br>${reason}`;
 
-        
-        // Restore Solar/Thermal Window formatting
+        // Keep Solar Window logic
+                // --- DAYTIME-ONLY DRYING WINDOW ---
         const formatT = (h) => { let wrap = (h + 24) % 24; return (wrap % 12 || 12) + (wrap >= 12 ? ' PM' : ' AM'); };
-        const dayTemps = data.hourly.temperature_2m.slice(k * 24, (k + 1) * 24);
-        const maxHr = dayTemps.indexOf(Math.max(...dayTemps));
-        let wType = (maxHr > 7 && maxHr < 18) ? "\u2600\uFE0F Solar Window" : "\uD83C\uDF21\uFE0F Thermal Window";
+        
+        // slice(8, 21) limits the search to 8 AM - 8 PM (standard Calgary business hours)
+        const daytimeTemps = data.hourly.temperature_2m.slice(k * 24 + 8, k * 24 + 21);
+        const peakDaytimeHr = daytimeTemps.indexOf(Math.max(...daytimeTemps)) + 8; 
+        
+        // Using Unicode: \u2600\uFE0F (Sun) and \uD83C\uDF21\uFE0F (Thermometer)
+        let wType = (peakDaytimeHr > 7 && peakDaytimeHr < 18) ? "\u2600\uFE0F Solar Window" : "\uD83C\uDF21\uFE0F Thermal Window";
         
         if (document.getElementById('solar-verdict-display')) {
-             document.getElementById('solar-verdict-display').innerHTML = `<b>${wType}: ${formatT(maxHr-1)} \u2014 ${formatT(maxHr+2)}</b><br><span style="font-size:0.8em; font-weight:400; color:#94a3b8;">${maxHr > 7 && maxHr < 18 ? 'Best for drying seals.' : 'Night peak detected. Use heated bay.'}</span>`;
+             document.getElementById('solar-verdict-display').innerHTML = `<b>${wType}: ${formatT(peakDaytimeHr-1)} \u2014 ${formatT(peakDaytimeHr+1)}</b><br><span style="font-size:0.8em; font-weight:400; color:#94a3b8;">Peak warmth for drying seals within business hours.</span>`;
         }
         
-        
     }
+    
 
-
-        // --- REFINED CALGARY WHAT-IF LOGIC ---
+    // --- REFINED CALGARY WHAT-IF LOGIC ---
     const whatIf = document.getElementById('what-if-text');
     
+    // We use vText because it is already defined in your updateWeather function
     if (vText.includes("GO: MAIN")) {
         whatIf.innerHTML = "<b>Ideal:</b> Roads are dry. Wash now to stay clean for 48h+.";
     } 
     else if (vText.includes("WAIT: SALTY")) {
         if (isStrict) {
-            // Priority: Aesthetics (Staying Clean)
             whatIf.innerHTML = "<b>Waste of money:</b> Tacky brine will coat your paint in 15 minutes. Wait for the dry window.";
         } else {
-            // Priority: Protection (Neutralization)
             whatIf.innerHTML = "<b>Neutralization Window:</b> Roads are messy, but removing salt now stops clear-coat pitting. <b>Priority: Paint over Pavements.</b>";
         }
     } 
-    else if (vText.includes("NO GO")) {
-        // Updated for the Calgary "Wand Wash" reality
+    else if (vText.includes("NO GO") || vText.includes("FREEZE")) {
         whatIf.innerHTML = "<b>Danger:</b> Water will flash-freeze in locks instantly. Only wash if you can <b>immediately</b> wipe all door seals and hinges dry before leaving the bay.";
+    } else {
+        whatIf.innerHTML = "<b>Analyzing:</b> Check back shortly for updated road chemistry data.";
     }
-    
-
     // --- REFINED FORECAST BAR (LIGHT MODE COMPATIBLE) ---
 let fH = ""; 
 for (let j = 5; j < 10; j++) {

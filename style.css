@@ -43,6 +43,7 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+
 .active-tile {
     border-color: #fbbf24 !important;
     background: rgba(251, 191, 36, 0.12) !important;
@@ -163,6 +164,24 @@
     .b-info { flex-grow: 1; text-align: left; }
     .btn-action-label { font-size: 0.62em; background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 4px; margin-top: 2px; display: inline-block; font-weight: bold; }
     .alert-drawer { display: none; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 8px; font-size: 0.85em; line-height: 1.5; }
+    /* REFINED RED: Matches the 'Muted' aesthetic of the app */
+.banner.red { 
+    background: #fef2f2; /* Very soft, muted rose */
+    color: #991b1b;      /* Deep burgundy text */
+    border: 1px solid #fecaca; /* Soft red border */
+}
+
+.banner.red span {
+    color: #dc2626; /* Brighter red for the icon only */
+}
+
+/* Optional: Add the Gold Glow to the red banner when active */
+.banner.red.active-tile {
+    border-color: #fbbf24 !important;
+    background-color: #fef2f2 !important; /* Keep the red base */
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.25);
+}
+
 
     .blue { background: #e0f2fe; color: #0369a1; }
     .orange { background: #fef3c7; color: #b45309; }
@@ -206,4 +225,5 @@
   background: rgba(255, 255, 255, 0.12) !important;
   filter: brightness(1.2);
 }
+
 

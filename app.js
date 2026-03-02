@@ -218,22 +218,31 @@ function updateUI() {
  // --- 4. CORE WEATHER ENGINE ---
 
 // THE SAFETY BRAIN: Ensures Today and Tomorrow use the same rules
-function getDaySafety(temp, precip, wind, isStrict, hadPastMelt = false) {
+function getDaySafety(temp, precip, wind, isStrict, hadPastMelt = false, isActiveMelt = false) {
     const tempFloor = isStrict ? -6 : -11;
     const precipLimit = isStrict ? 0.1 : 0.6;
     const isFreezeDried = (temp < -8 && wind > 18);
 
     if (temp < -18) return { safe: false, msg: "TOO COLD", desc: "Inert cold. High rock chip risk." };
     if (temp < tempFloor && !isFreezeDried) return { safe: false, msg: "FREEZE RISK", desc: "Water will flash-freeze in locks." };
-    if (precip > precipLimit) return { safe: false, msg: "WET ROADS", desc: "Roads are messy/snowy." };
     
-    // THE CALGARY SLUSH RULE: If it's near zero and yesterday was warm, it's a mess.
+        // THE SLUDGE OVERRIDE
+    // If snow is actively melting, it's a spray nightmare.
+    // REMOVED the "temp < 8" limit because spray is WORSE when it's warmer.
+    if (isActiveMelt) {
+        return { 
+            safe: false, 
+            msg: "ROAD SPRAY", 
+            desc: "Heavy residual melt. Cars ahead will spray grey film on your paint instantly." 
+        };
+    }
+    
+
+    if (precip > precipLimit) return { safe: false, msg: "WET ROADS", desc: "Roads are messy/snowy." };
     if (temp > -4 && temp < 3 && hadPastMelt) return { safe: false, msg: "SALTY SLUSH", desc: "Roads are tacky and corrosive." };
 
     return { safe: true, msg: "GO", desc: "Ideal Conditions." };
 }
-
-
 async function updateWeather(isFullRefresh = true) {
   const card = document.getElementById('card');
   const syncTag = document.getElementById('sync-tag');
@@ -257,17 +266,30 @@ async function updateWeather(isFullRefresh = true) {
     const isStrict = document.getElementById('risk-toggle')?.checked ?? true;
     const isHighVoltage = document.getElementById('ev-toggle')?.checked ?? false;
 
-    // Road Wetness Logic
-    let hadMelt = false, totalPrec = 0;
+    // Road Wetness & Sludge History Logic
+    let hadMelt = false;
+    let totalPrec = 0;
+    let recentSnowfall = 0;
+
     for (let i = 0; i <= todayIdx; i++) {
         if (data.daily.temperature_2m_max[i] > 0) hadMelt = true;
         totalPrec += (data.daily.precipitation_sum[i] || 0);
+        
+        // Count moisture from the last 5 days (to catch the big storm)
+        if (i >= (todayIdx - 5) && i < todayIdx) {
+            recentSnowfall += (data.daily.precipitation_sum[i] || 0);
+        }
     }
-    const roadsFreezeDried = (curTemp < -8 && wind > 18);
-    const effectiveWetness = (hadMelt || totalPrec > 0.1) && !roadsFreezeDried;
 
-        // Main Verdict - SYNCHRONIZED WITH SAFETY BRAIN
-    const currentSafety = getDaySafety(curTemp, (data.hourly.precipitation[curHr] || 0), wind, isStrict, hadMelt);
+    // NEW STRICTER CALCULATION:
+    // If >5mm water-equiv fell recently and it's above freezing (the melt zone).
+    // We removed the "8 degree cap" so it stays red even during a warm Chinook.
+    const isActiveMelt = (recentSnowfall > 5.0 && curTemp > -2); 
+    const roadsFreezeDried = (curTemp < -8 && wind > 18);
+    const effectiveWetness = (hadMelt || totalPrec > 0.1 || isActiveMelt) && !roadsFreezeDried;
+
+    // Main Verdict - Passes the new sludge state
+    const currentSafety = getDaySafety(curTemp, (data.hourly.precipitation[curHr] || 0), wind, isStrict, hadMelt, isActiveMelt);
     
     let vText = currentSafety.safe ? "GO: MAINTENANCE WINDOW" : `WAIT: ${currentSafety.msg}`;
     let vCol = currentSafety.safe ? "var(--green)" : (currentSafety.msg.includes("COLD") || currentSafety.msg.includes("FREEZE")) ? "var(--blue)" : "#92400e";
@@ -303,10 +325,12 @@ async function updateWeather(isFullRefresh = true) {
 
     // Adaptive Banners
     const setDisp = (id, cond) => { const el = document.getElementById(id); if (el) el.style.display = cond ? 'flex' : 'none'; };
+    
     setDisp('plugin-alert', curTemp <= -20);
     setDisp('regen-alert', isHighVoltage && curTemp <= -15);
     setDisp('fluid-alert', curTemp < -8 && curTemp > -18);
     setDisp('chip-alert', curTemp < -14);
+    setDisp('spray-alert', isActiveMelt); 
     setDisp('rust-alert', (curTemp > -5 && curTemp < 3 && effectiveWetness));
     setDisp('ice-alert', (curTemp <= 1 && effectiveWetness));
     if (curTemp < 0) {
@@ -322,14 +346,20 @@ async function updateWeather(isFullRefresh = true) {
     let stability = "HIGH";
 
     for (let k = startSearchAt; k < data.daily.time.length; k++) {
+
       const maxT = data.daily.temperature_2m_max[k];
       const snow = data.daily.precipitation_sum[k] || 0;
       const tW = data.hourly.wind_speed_10m[k * 24 + 12];
       const tT = data.hourly.temperature_2m[k * 24 + 12];
       const yesterdayMelt = data.daily.temperature_2m_max[k - 1] > 0;
 
-      // 1. Apply the Unified Safety Check (The Fix)
-      const safety = getDaySafety(maxT, snow, tW, isStrict, yesterdayMelt);
+
+      // Calculate if the snow from prior days is still melting on this future day 'k'
+      let snowfallPrior = (data.daily.precipitation_sum[k-1] || 0) + (data.daily.precipitation_sum[k-2] || 0);
+      let futureActiveMelt = (snowfallPrior > 5.0 && maxT > -3 && maxT < 8);
+
+      const safety = getDaySafety(maxT, snow, tW, isStrict, yesterdayMelt, futureActiveMelt);
+      
 
       if (safety.safe) {
         if (backupIdx === null) backupIdx = k;
@@ -418,9 +448,7 @@ async function updateWeather(isFullRefresh = true) {
         }
         
     }
-    
-
-    // --- REFINED CALGARY WHAT-IF LOGIC ---
+        // --- REFINED CALGARY WHAT-IF LOGIC ---
     const whatIf = document.getElementById('what-if-text');
     
     // We use vText because it is already defined in your updateWeather function
@@ -439,6 +467,9 @@ async function updateWeather(isFullRefresh = true) {
     } else {
         whatIf.innerHTML = "<b>Analyzing:</b> Check back shortly for updated road chemistry data.";
     }
+    
+    
+
     // --- REFINED FORECAST BAR (LIGHT MODE COMPATIBLE) ---
 let fH = ""; 
 for (let j = 5; j < 10; j++) {

@@ -239,10 +239,18 @@ function getDaySafety(temp, precip, wind, isStrict, hadPastMelt = false, isActiv
     
 
     if (precip > precipLimit) return { safe: false, msg: "WET ROADS", desc: "Roads are messy/snowy." };
-    if (temp > -4 && temp < 3 && hadPastMelt) return { safe: false, msg: "SALTY SLUSH", desc: "Roads are tacky and corrosive." };
+        // THE CALGARY SLUSH RULE: Brine stays liquid far below freezing.
+    // We are widening the "Danger Zone" to -9°C.
+    if (temp > -9 && temp < 3 && hadPastMelt) {
+        return { safe: false, msg: "SALTY SLUSH", desc: "Roads are still wet with brine. High spray risk even at sub-zero temps." };
+    }
+
 
     return { safe: true, msg: "GO", desc: "Ideal Conditions." };
 }
+
+
+
 async function updateWeather(isFullRefresh = true) {
   const card = document.getElementById('card');
   const syncTag = document.getElementById('sync-tag');
@@ -281,11 +289,15 @@ async function updateWeather(isFullRefresh = true) {
         }
     }
 
-    // NEW STRICTER CALCULATION:
-    // If >5mm water-equiv fell recently and it's above freezing (the melt zone).
-    // We removed the "8 degree cap" so it stays red even during a warm Chinook.
-    const isActiveMelt = (recentSnowfall > 5.0 && curTemp > -2); 
+       // --- PRE-EMPTIVE MELT LOGIC ---
+    // Look at the forecast HIGH (todayMax) to see if it will melt later.
+    const todayMax = data.daily.temperature_2m_max[todayIdx];
+    
+    // Trigger "Active Melt" if we had >2mm of snow recently and today's high is above -2°C
+    const isActiveMelt = (recentSnowfall > 2.0 && todayMax > -2); 
+
     const roadsFreezeDried = (curTemp < -8 && wind > 18);
+          // This feeds into your "Chassis Chemistry" and Alert Banners
     const effectiveWetness = (hadMelt || totalPrec > 0.1 || isActiveMelt) && !roadsFreezeDried;
 
     // Main Verdict - Passes the new sludge state
@@ -297,6 +309,49 @@ async function updateWeather(isFullRefresh = true) {
     // Using your original Unicode setups
     let status = currentSafety.safe ? "\u2705 WASH NOW" : currentSafety.msg.includes("COLD") ? "\u2744\ufe0f\u2744\ufe0f TOO COLD" : "\ud83d\udca9 ROADS ARE MESSY";
     let judgement = currentSafety.desc; 
+    
+        // --- 1. THE HOURLY SCAN (Insert here) ---
+    let timelineHTML = "";
+    let dailyWindowFound = false;
+    let bestHour = null;
+    let windowSafety = null;
+
+    for (let h = 9; h <= 19; h++) {
+        let hourIdx = (todayIdx * 24) + h;
+        if (!data.hourly.temperature_2m[hourIdx]) continue;
+
+        let hTemp = data.hourly.temperature_2m[hourIdx];
+        let hPrec = data.hourly.precipitation[hourIdx] || 0;
+        let hWind = data.hourly.wind_speed_10m[hourIdx];
+
+        // This checks every hour using your Safety Brain
+        let hSafety = getDaySafety(hTemp, hPrec, hWind, isStrict, hadMelt, isActiveMelt);
+
+        // Pick the color for each block
+        let hCol = hSafety.safe ? "#059669" : (hSafety.msg.includes("COLD") || hSafety.msg.includes("FREEZE")) ? "#0284c7" : "#92400e";
+        
+        timelineHTML += `<div style="flex: 1; background: ${hCol}; height: 100%; border-right: 1px solid rgba(255,255,255,0.15);"></div>`;
+
+        if (hSafety.safe && !dailyWindowFound) {
+            dailyWindowFound = true;
+            bestHour = h;
+            windowSafety = hSafety;
+        } else if (!windowSafety) {
+            windowSafety = hSafety;
+        }
+    }
+
+    // --- 2. THE INJECTION ---
+    const timelineEl = document.getElementById('hourly-timeline');
+    if (timelineEl) timelineEl.innerHTML = timelineHTML;
+
+    const statusTag = document.getElementById('window-status-tag');
+    if (statusTag) {
+        statusTag.innerText = dailyWindowFound ? "WINDOW DETECTED" : "SLUSH LOCKOUT";
+        statusTag.style.background = dailyWindowFound ? "#dcfce7" : "#fee2e2";
+        statusTag.style.color = dailyWindowFound ? "#166534" : "#991b1b";
+    }
+    
 
     document.getElementById('final-verdict').innerText = vText;
     document.getElementById('final-verdict').style.backgroundColor = vCol;
@@ -448,7 +503,9 @@ async function updateWeather(isFullRefresh = true) {
         }
         
     }
-        // --- REFINED CALGARY WHAT-IF LOGIC ---
+    
+
+    // --- REFINED CALGARY WHAT-IF LOGIC ---
     const whatIf = document.getElementById('what-if-text');
     
     // We use vText because it is already defined in your updateWeather function
@@ -467,10 +524,7 @@ async function updateWeather(isFullRefresh = true) {
     } else {
         whatIf.innerHTML = "<b>Analyzing:</b> Check back shortly for updated road chemistry data.";
     }
-    
-    
-
-    // --- REFINED FORECAST BAR (LIGHT MODE COMPATIBLE) ---
+      // --- REFINED FORECAST BAR (LIGHT MODE COMPATIBLE) ---
 let fH = ""; 
 for (let j = 5; j < 10; j++) {
   const dDate = new Date(data.daily.time[j] + "T00:00:00");
@@ -535,9 +589,28 @@ document.getElementById('forecast').innerHTML = fH;
         syncTag.innerText = "YYC UPDATED: " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
     
-    
-    
     updateUI();
+        // --- 5. POSITION THE 'NOW' MARKER ---
+    const now = new Date();
+    const currentHr = now.getHours();
+    const currentMin = now.getMinutes();
+    const markerEl = document.getElementById('now-marker');
+
+    if (markerEl) {
+        // Only show if we are between 9 AM (9) and 7 PM (19)
+        if (currentHr >= 9 && currentHr < 19) {
+            // Calculate percentage: (Current Time - Start Time) / Total Duration
+            const totalMinutes = (currentHr - 9) * 60 + currentMin;
+            const percentage = (totalMinutes / (10 * 60)) * 100;
+            
+            markerEl.style.display = 'block';
+            markerEl.style.left = percentage + '%';
+        } else {
+            // It's before 9 AM or after 7 PM
+            markerEl.style.display = 'none';
+        }
+    }
+    
     
   } catch (e) { 
     console.error("Fetch Error:", e);
@@ -664,3 +737,24 @@ function openWeatherApp(e) {
   }
 
 }
+// --- 6. THE LIVE TICKER ---
+setInterval(() => {
+    const markerEl = document.getElementById('now-marker');
+    if (!markerEl) return;
+
+    const now = new Date();
+    const hr = now.getHours();
+    const min = now.getMinutes();
+
+    // The timeline window is 9 AM (9) to 7 PM (19)
+    if (hr >= 9 && hr < 19) {
+        const totalMinutes = (hr - 9) * 60 + min;
+        const percentage = (totalMinutes / (10 * 60)) * 100;
+        
+        markerEl.style.display = 'block';
+        markerEl.style.left = percentage + '%';
+        console.log("Timeline Ticked: " + percentage.toFixed(2) + "%");
+    } else {
+        markerEl.style.display = 'none';
+    }
+}, 60000); 
